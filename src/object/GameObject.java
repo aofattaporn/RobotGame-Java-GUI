@@ -1,8 +1,10 @@
-package com.company;
+package object;
+
+import com.company.ID;
 
 import java.awt.*;
 
-public  abstract  class GameObject {
+public abstract class GameObject {
 
     protected int x, y;
     protected float velX = 0, velY = 0;
@@ -15,7 +17,9 @@ public  abstract  class GameObject {
     }
 
     public abstract void tick();
+
     public abstract void render(Graphics g);
+
     public abstract Rectangle getBounds();
 
     public ID getId() {

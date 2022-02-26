@@ -1,5 +1,7 @@
 package com.company;
 
+import object.Robot;
+
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 
@@ -22,9 +24,11 @@ public class Game extends Canvas implements Runnable {
         start();
 
         handler = new Handler();
+        this.addKeyListener(new KeyInput(handler));
 
-        handler.addObject(new Box(100, 100, ID.Block));
-//        handler.addObject(new Box(200, 100, ID.player));
+        // adding object
+        handler.addObject(new Robot(100, 100, ID.player, handler));
+
 
     }
 
@@ -59,6 +63,7 @@ public class Game extends Canvas implements Runnable {
         while (isRunning){
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
+            lastTime = now;
 
             while (delta >= 1){
                 tick();
