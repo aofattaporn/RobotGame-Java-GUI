@@ -1,9 +1,14 @@
 package com.company;
 
+import object.Block;
 import object.Robot;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
 
 public class Game extends Canvas implements Runnable {
 
@@ -14,9 +19,9 @@ public class Game extends Canvas implements Runnable {
     private boolean isRunning = false;
     private Thread thread;
     private Handler handler;
+    private BufferedImage level = null;
 
-
-    public Game(){
+    public Game() {
         // create window
         new Window(WIDTH, HEIGHT, "Robot Game", this);
 
@@ -26,9 +31,11 @@ public class Game extends Canvas implements Runnable {
         handler = new Handler();
         this.addKeyListener(new KeyInput(handler));
 
-        // adding object
-        handler.addObject(new Robot(100, 100, ID.player, handler));
+        BufferImagesLoader loader = new BufferImagesLoader();
+        level = loader.loadImage("board.png");
+//        loadLevel(level);
 
+        handler.addObject(new Robot(32, 32, ID.player, handler));
 
     }
 
@@ -99,8 +106,9 @@ public class Game extends Canvas implements Runnable {
         Graphics g = bs.getDrawGraphics();
         /////////////////////////////////
 
-        g.setColor(Color.pink);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
+//        g.setColor(Color.red);
+//        g.fillRect(0, 0, WIDTH, HEIGHT);
+        tileMap(level, g);
 
         handler.render(g);
 
@@ -110,7 +118,42 @@ public class Game extends Canvas implements Runnable {
 
     }
 
+    private void loadLevel(BufferedImage image){
+        int w = image.getWidth();
+        int h = image.getHeight();
+
+        for (int xx = 0; xx < w; xx++){
+            for (int yy = 0; yy < h; yy++){
+                int pixel = image.getRGB(xx, yy);
+                int red = (pixel >> 16 ) & 0xff;
+                int green = (pixel >> 8) & 0xff;
+                int blue = (pixel) & 0xff;
+
+                if (red == 255){
+                    handler.addObject(new Block(xx*32, yy*32, ID.Block));
+                }
+
+                if (blue == 255){
+                    handler.addObject(new Robot(xx*32, yy*32, ID.player , handler));
+                }
+            }
+        }
+    }
+
+    private void tileMap(BufferedImage image, Graphics g){
+        int x = 0, y = 0;
+        for (int i = 0; i < 100; i++){
+            for (int j = 0; j < 100; j++){
+                g.drawImage(image, x, y , 32, 32, null);
+                x += 32;
+            }
+            y += 32;
+            x = 0;
+        }
+    }
+
     public static void main(String[] args) {
         new Game();
     }
+
 }

@@ -15,7 +15,7 @@ public class Robot extends GameObject {
     }
 
     @Override
-    public void tick() {
+    public void tick(){
         x += velX;
         y += velY;
 
@@ -35,8 +35,8 @@ public class Robot extends GameObject {
     }
 
     @Override
-    public void render(Graphics g) {
-        g.setColor(Color.GRAY);
+    public void render(Graphics g){
+        g.setColor(Color.black);
         g.fillRect(x, y, 32, 32);
     }
 
