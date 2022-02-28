@@ -8,7 +8,7 @@ import java.util.LinkedList;
 public class Handler  {
 
     LinkedList<GameObject> object = new LinkedList<>();
-    private boolean up = false, down = false, right = false, left = false;
+    private boolean up = false, down = false, right = false, left = false, spaceBar = false;
 
     public boolean isUp() {
         return up;
@@ -42,12 +42,18 @@ public class Handler  {
         this.left = left;
     }
 
+    public boolean isSpaceBar() {
+        return spaceBar;
+    }
+
+    public void setSpaceBar(boolean spaceBar) {
+        this.spaceBar = spaceBar;
+    }
+
     public void tick(){
         for (int i = 0; i < object.size(); i++){
             GameObject tempObject = object.get(i);
-
             tempObject.tick();
-
         }
     }
 

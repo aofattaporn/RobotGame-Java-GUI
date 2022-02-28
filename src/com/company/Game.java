@@ -21,6 +21,7 @@ public class Game extends Canvas implements Runnable {
     private Handler handler;
     private BufferedImage level = null;
 
+
     public Game() {
         // create window
         new Window(WIDTH, HEIGHT, "Robot Game", this);
@@ -33,9 +34,9 @@ public class Game extends Canvas implements Runnable {
 
         BufferImagesLoader loader = new BufferImagesLoader();
         level = loader.loadImage("board.png");
-//        loadLevel(level);
+        // loadLevel(level);
 
-        handler.addObject(new Robot(32, 32, ID.player, handler));
+        handler.addObject(new Robot(32, 32, ID.player, handler, loader));
 
     }
 
@@ -61,7 +62,7 @@ public class Game extends Canvas implements Runnable {
         this.requestFocus();
 
         long lastTime = System.nanoTime();
-        double amountOfTicks = 60.0;
+        double amountOfTicks = 12;
         double ns = 1000000000 / amountOfTicks;
         double delta = 0;
         long timer = System.currentTimeMillis();
@@ -106,8 +107,8 @@ public class Game extends Canvas implements Runnable {
         Graphics g = bs.getDrawGraphics();
         /////////////////////////////////
 
-//        g.setColor(Color.red);
-//        g.fillRect(0, 0, WIDTH, HEIGHT);
+        g.setColor(Color.red);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
         tileMap(level, g);
 
         handler.render(g);
@@ -134,7 +135,7 @@ public class Game extends Canvas implements Runnable {
                 }
 
                 if (blue == 255){
-                    handler.addObject(new Robot(xx*32, yy*32, ID.player , handler));
+//                    handler.addObject(new Robot(xx*32, yy*32, ID.player , handler, l));
                 }
             }
         }

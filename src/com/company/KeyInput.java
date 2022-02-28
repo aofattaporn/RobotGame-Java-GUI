@@ -25,6 +25,8 @@ public class KeyInput extends KeyAdapter {
                 if (key == KeyEvent.VK_A) handler.setLeft(true);
                 if (key == KeyEvent.VK_D) handler.setRight(true);
 
+                if (key == KeyEvent.VK_SPACE) handler.setSpaceBar(true);
+
             }
         }
     }
@@ -41,6 +43,8 @@ public class KeyInput extends KeyAdapter {
                 if (key == KeyEvent.VK_S) handler.setDown(false);
                 if (key == KeyEvent.VK_A) handler.setLeft(false);
                 if (key == KeyEvent.VK_D) handler.setRight(false);
+
+                if (key == KeyEvent.VK_SPACE) handler.setRight(false);
 
             }
         }
