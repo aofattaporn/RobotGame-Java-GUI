@@ -1,6 +1,7 @@
 package com.company;
 
 import object.GameObject;
+import object.ID;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

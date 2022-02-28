@@ -1,14 +1,12 @@
 package com.company;
 
 import object.Block;
+import object.ID;
 import object.Robot;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Objects;
 
 public class Game extends Canvas implements Runnable {
 
@@ -19,8 +17,7 @@ public class Game extends Canvas implements Runnable {
     private boolean isRunning = false;
     private Thread thread;
     private Handler handler;
-    private BufferedImage level = null;
-
+    private BufferedImage tile = null;
 
     public Game() {
         // create window
@@ -32,8 +29,12 @@ public class Game extends Canvas implements Runnable {
         handler = new Handler();
         this.addKeyListener(new KeyInput(handler));
 
+        // create background
         BufferImagesLoader loader = new BufferImagesLoader();
-        level = loader.loadImage("board.png");
+        tile = loader.loadImage("/res/board.png");
+
+        // create position block
+
 
         // add robot character
         handler.addObject(new Robot(32, 32, ID.player, handler, loader));
@@ -55,7 +56,6 @@ public class Game extends Canvas implements Runnable {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public void run() {
@@ -107,9 +107,12 @@ public class Game extends Canvas implements Runnable {
         Graphics g = bs.getDrawGraphics();
         /////////////////////////////////
 
-        g.setColor(Color.red);
+        g.setColor(Color.BLACK);
         g.fillRect(0, 0, WIDTH, HEIGHT);
-        tileMap(level, g);
+        tileMap(tile, g);
+
+//        g.setColor(Color.BLACK);
+//        g.fillRect(WIDTH - 100, HEIGHT - 100, 100, 40);
 
         handler.render(g);
 
