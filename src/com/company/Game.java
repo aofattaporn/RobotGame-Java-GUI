@@ -34,19 +34,19 @@ public class Game extends Canvas implements Runnable {
 
         BufferImagesLoader loader = new BufferImagesLoader();
         level = loader.loadImage("board.png");
-        // loadLevel(level);
 
+        // add robot character
         handler.addObject(new Robot(32, 32, ID.player, handler, loader));
 
     }
 
-    public void start(){
+    public void start() {
         isRunning = true;
         thread = new Thread(this);
         thread.start();
     }
 
-    public void stop(){
+    public void stop() {
         isRunning = false;
 
         try {
@@ -68,12 +68,12 @@ public class Game extends Canvas implements Runnable {
         long timer = System.currentTimeMillis();
         int frames = 0;
 
-        while (isRunning){
+        while (isRunning) {
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
 
-            while (delta >= 1){
+            while (delta >= 1) {
                 tick();
                 delta--;
             }
@@ -81,7 +81,7 @@ public class Game extends Canvas implements Runnable {
             render();
             frames++;
 
-            if (System.currentTimeMillis() - timer > 1000){
+            if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
                 frames = 0;
                 // updates = 0;
@@ -91,15 +91,15 @@ public class Game extends Canvas implements Runnable {
     }
 
     // update method
-    public void tick(){
+    public void tick() {
         handler.tick();
     }
 
     // render screen
-    public void render(){
+    public void render() {
         BufferStrategy bs = this.getBufferStrategy();
 
-        if (bs == null){
+        if (bs == null) {
             this.createBufferStrategy(3);
             return;
         }
@@ -119,33 +119,33 @@ public class Game extends Canvas implements Runnable {
 
     }
 
-    private void loadLevel(BufferedImage image){
+    private void loadLevel(BufferedImage image) {
         int w = image.getWidth();
         int h = image.getHeight();
 
-        for (int xx = 0; xx < w; xx++){
-            for (int yy = 0; yy < h; yy++){
+        for (int xx = 0; xx < w; xx++) {
+            for (int yy = 0; yy < h; yy++) {
                 int pixel = image.getRGB(xx, yy);
-                int red = (pixel >> 16 ) & 0xff;
+                int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
                 int blue = (pixel) & 0xff;
 
-                if (red == 255){
-                    handler.addObject(new Block(xx*32, yy*32, ID.Block));
+                if (red == 255) {
+                    handler.addObject(new Block(xx * 32, yy * 32, ID.Block));
                 }
 
-                if (blue == 255){
+                if (blue == 255) {
 //                    handler.addObject(new Robot(xx*32, yy*32, ID.player , handler, l));
                 }
             }
         }
     }
 
-    private void tileMap(BufferedImage image, Graphics g){
+    private void tileMap(BufferedImage image, Graphics g) {
         int x = 0, y = 0;
-        for (int i = 0; i < 100; i++){
-            for (int j = 0; j < 100; j++){
-                g.drawImage(image, x, y , 32, 32, null);
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 100; j++) {
+                g.drawImage(image, x, y, 32, 32, null);
                 x += 32;
             }
             y += 32;

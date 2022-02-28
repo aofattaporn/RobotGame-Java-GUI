@@ -12,9 +12,11 @@ import java.util.Objects;
 
 public class Robot extends GameObject {
 
-    Handler handler;
-    BufferedImage robotUP, rotbotDown, robotLeft, robotRight, image;
-    BufferImagesLoader loader;
+    private Handler handler;
+    private BufferedImage robotUP, rotbotDown, robotLeft, robotRight, image;
+    private String direct;
+    private boolean state = false;
+    private BufferImagesLoader loader;
 
     public Robot(int x, int y, ID id, Handler handler, BufferImagesLoader loader) {
         super(x, y, id);
@@ -33,41 +35,55 @@ public class Robot extends GameObject {
     }
 
     @Override
-    public void tick(){
+    public void tick() {
         x += velX;
         y += velY;
 
-
         // movement
         if (handler.isUp()) {
-            if (image == robotUP) velY = -32;
+            if (image == robotUP) {
+                velY = -32;
+            }
             image = robotUP;
-        }
-        else if (!handler.isDown()){ velY = 0;}
+            direct = "up";
 
-        if (handler.isDown()){
-            if (image == rotbotDown) velY = 32;
+        } else if (!handler.isDown()) {
+            velY = 0;
+        }
+
+        if (handler.isDown()) {
+            if (image == rotbotDown) {
+                velY = 32;
+            }
             image = rotbotDown;
-        }
-        else if (!handler.isUp()) velY = 0;
+            direct = "down";
 
-        if (handler.isRight()){
-            if (image == robotRight) velX = 32;
+        } else if (!handler.isUp()) velY = 0;
+
+        if (handler.isRight()) {
+            if (image == robotRight) {
+                velX = 32;
+            }
             image = robotRight;
-        }
-        else if (!handler.isLeft()) velX = 0;
+            direct = "right";
+        } else if (!handler.isLeft()) velX = 0;
 
-        if (handler.isLeft()){
+        if (handler.isLeft()) {
             if (image == robotLeft) velX = -32;
             image = robotLeft;
-        }
+            direct = "left";
+        } else if (!handler.isRight()) velX = 0;
 
-        else if (!handler.isRight()) velX = 0;
-
-        if (handler.isSpaceBar()){
+        if (handler.isSpaceBar()) {
             // TODO : set bullet create object
-            handler.addObject(new Gun(x, y, ID.Bullet));
+            if (!state){
+                handler.addObject(new Gun(x, y, ID.Bullet, this));
+                state = true;
+            }else {
+                state = false;
+            }
         }
+
 
 
     }
@@ -75,8 +91,7 @@ public class Robot extends GameObject {
     @Override
     public void render(Graphics g) {
 
-
-        g.drawImage(image , x, y, 40, 40, null);
+        g.drawImage(image, x, y, 40, 40, null);
 
     }
 
@@ -85,4 +100,11 @@ public class Robot extends GameObject {
         return new Rectangle(x, y, 40, 40);
     }
 
+    public String getDirect() {
+        return direct;
+    }
+
+    public void setDirect(String direct) {
+        this.direct = direct;
+    }
 }
