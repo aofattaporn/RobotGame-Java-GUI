@@ -3,6 +3,7 @@ package minaGame;
 import controller.BufferImagesLoader;
 import controller.Camera;
 import controller.KeyInput;
+import entity.ElementPosition;
 import object.Block;
 import object.BlockTile;
 import object.ID;
@@ -11,6 +12,8 @@ import object.Robot;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.sql.Array;
+import java.util.ArrayList;
 
 public class Game extends Canvas implements Runnable {
 
@@ -18,6 +21,7 @@ public class Game extends Canvas implements Runnable {
     private final int WIDTH = 800;
     private final int HEIGHT = 640;
     public static int BOX_SIZE = 32;
+    ArrayList<ElementPosition> ABomb;
 
     // dependency injection
     private boolean isRunning = false;
@@ -28,15 +32,13 @@ public class Game extends Canvas implements Runnable {
 
     // constructor
     public Game() {
+
         // create window
         new Window(WIDTH, HEIGHT, "Robot Game", this);
 
         // run main threading
         start();
-
-        int randomX = getRandomPlayer(2, 102);
-        int randomY = getRandomPlayer(2, 82);
-
+        ABomb = new ArrayList<ElementPosition>();
 
         handler = new Handler();
         camera = new Camera(this);
@@ -47,13 +49,35 @@ public class Game extends Canvas implements Runnable {
         tile = loader.loadImage("/res/tile.png");
         createTileMap();
 
-
         // add robot character
-        handler.addObject(new Robot(32 * randomX, 32 * randomY, ID.player, handler, loader));
+        handler.addObject(new Robot(BOX_SIZE * 2, BOX_SIZE * 2, ID.player, handler, loader));
+
+        // create bomb
+        randElement(ABomb, 240);
+
+        // create ET
+
+
 
     }
 
-    private void createTileMap(){
+    private void randElement(ArrayList<ElementPosition> element, int size){
+
+        int randBombX = 0;
+        int randBombY = 0;
+
+        for (int i = 0; i < size; i++) {
+
+            randBombX = getRandomPlayer(2, 102);
+            randBombY = getRandomPlayer(2, 82);
+
+            ABomb.add(new ElementPosition(randBombX, randBombY));
+            handler.addObject(new Block(randBombX * BOX_SIZE, randBombY * BOX_SIZE, ID.Block));
+
+        }
+    }
+
+    private void createTileMap() {
         handler.addObject(new BlockTile(2, 2, tile, ID.Block));
     }
 
@@ -112,7 +136,7 @@ public class Game extends Canvas implements Runnable {
 
     // update method
     public void tick() {
-        for (int i = 0; i < handler.object.size(); i++){
+        for (int i = 0; i < handler.object.size(); i++) {
             camera.tick(handler.object.get(i));
         }
         handler.tick();
@@ -146,23 +170,22 @@ public class Game extends Canvas implements Runnable {
         createPosition(g);
 
 
-
         /////////////////////////////////
         g.dispose();
         bs.show();
 
     }
 
-    private void createPosition(Graphics g){
+    private void createPosition(Graphics g) {
         g.setColor(Color.GRAY);
         g.fillRect(600, 10, 150, 50);
         g.setColor(Color.WHITE);
-        for (int i = 0; i < handler.object.size(); i++){
-            if (handler.object.get(i).getId() == ID.player){
-                System.out.println("x : " + (handler.object.get(i).getX() / 32 )  + ", y : " + (handler.object.get(i).getY() / 32));
+        for (int i = 0; i < handler.object.size(); i++) {
+            if (handler.object.get(i).getId() == ID.player) {
+//                System.out.println("x : " + (handler.object.get(i).getX() / 32 )  + ", y : " + (handler.object.get(i).getY() / 32));
                 g.drawString("X : " +
-                                String.valueOf((handler.object.get(i).getX()-2) / 32) + ", Y :" +
-                                String.valueOf((handler.object.get(i).getY()-2) / 32),
+                                String.valueOf((handler.object.get(i).getX() - 2) / 32) + ", Y :" +
+                                String.valueOf((handler.object.get(i).getY() - 2) / 32),
                         625, 40);
             }
         }
