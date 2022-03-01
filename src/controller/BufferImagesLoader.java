@@ -1,4 +1,4 @@
-package com.company;
+package controller;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

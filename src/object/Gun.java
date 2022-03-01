@@ -1,7 +1,5 @@
 package object;
 
-import com.company.ID;
-
 import java.awt.*;
 
 public class Gun extends GameObject implements Runnable{

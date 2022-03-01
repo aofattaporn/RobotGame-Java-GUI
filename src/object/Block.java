@@ -1,7 +1,5 @@
 package object;
 
-import com.company.ID;
-
 import java.awt.*;
 
 public class Block extends GameObject{
@@ -17,7 +15,7 @@ public class Block extends GameObject{
 
     @Override
     public void render(Graphics g) {
-        g.setColor(Color.BLACK);
+        g.setColor(Color.pink);
         g.fillRect(x, y, 32, 32);
     }
 

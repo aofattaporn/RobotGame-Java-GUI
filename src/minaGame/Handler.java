@@ -1,4 +1,4 @@
-package com.company;
+package minaGame;
 
 import object.GameObject;
 
@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 public class Handler  {
 
-    LinkedList<GameObject> object = new LinkedList<>();
+    public LinkedList<GameObject> object = new LinkedList<>();
     private boolean up = false, down = false, right = false, left = false, spaceBar = false;
 
     public boolean isUp() {

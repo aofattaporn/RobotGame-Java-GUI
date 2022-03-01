@@ -1,6 +1,10 @@
-package com.company;
+package minaGame;
 
+import controller.BufferImagesLoader;
+import controller.Camera;
+import controller.KeyInput;
 import object.Block;
+import object.BlockTile;
 import object.ID;
 import object.Robot;
 
@@ -12,13 +16,17 @@ public class Game extends Canvas implements Runnable {
 
     // variable
     private final int WIDTH = 800;
-    private final int HEIGHT = 600;
+    private final int HEIGHT = 640;
+    public static int BOX_SIZE = 32;
 
+    // dependency injection
     private boolean isRunning = false;
-    private Thread thread;
+    private Thread mainThread;
     private Handler handler;
+    private Camera camera;
     private BufferedImage tile = null;
 
+    // constructor
     public Game() {
         // create window
         new Window(WIDTH, HEIGHT, "Robot Game", this);
@@ -26,32 +34,43 @@ public class Game extends Canvas implements Runnable {
         // run main threading
         start();
 
+        int randomX = getRandomPlayer(2, 102);
+        int randomY = getRandomPlayer(2, 82);
+
         handler = new Handler();
+        camera = new Camera(this);
         this.addKeyListener(new KeyInput(handler));
 
         // create background
         BufferImagesLoader loader = new BufferImagesLoader();
-        tile = loader.loadImage("/res/board.png");
-
-        // create position block
+        tile = loader.loadImage("/res/tile.png");
+        createTileMap();
 
 
         // add robot character
-        handler.addObject(new Robot(32, 32, ID.player, handler, loader));
+        handler.addObject(new Robot(32 * randomX, 32 * randomY, ID.player, handler, loader));
 
+    }
+
+    private void createTileMap(){
+        handler.addObject(new BlockTile(2, 2, tile, ID.Block));
+    }
+
+    private int getRandomPlayer(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
     }
 
     public void start() {
         isRunning = true;
-        thread = new Thread(this);
-        thread.start();
+        mainThread = new Thread(this);
+        mainThread.start();
     }
 
     public void stop() {
         isRunning = false;
 
         try {
-            thread.join();
+            mainThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -92,6 +111,9 @@ public class Game extends Canvas implements Runnable {
 
     // update method
     public void tick() {
+        for (int i = 0; i < handler.object.size(); i++){
+            camera.tick(handler.object.get(i));
+        }
         handler.tick();
     }
 
@@ -105,16 +127,24 @@ public class Game extends Canvas implements Runnable {
         }
 
         Graphics g = bs.getDrawGraphics();
+        Graphics2D g2d = (Graphics2D) g;
         /////////////////////////////////
 
-        g.setColor(Color.BLACK);
+
+        g.setColor(Color.getHSBColor(0.59f, 0.85f, 0.50f));
         g.fillRect(0, 0, WIDTH, HEIGHT);
-        tileMap(tile, g);
 
-//        g.setColor(Color.BLACK);
-//        g.fillRect(WIDTH - 100, HEIGHT - 100, 100, 40);
+        g.setColor(Color.GREEN);
 
+
+        g2d.translate(-camera.getCamX(), -camera.getCamY());
         handler.render(g);
+        g2d.translate(camera.getCamX(), camera.getCamY());
+
+        // create position box
+        createPosition(g);
+
+
 
         /////////////////////////////////
         g.dispose();
@@ -122,38 +152,20 @@ public class Game extends Canvas implements Runnable {
 
     }
 
-    private void loadLevel(BufferedImage image) {
-        int w = image.getWidth();
-        int h = image.getHeight();
-
-        for (int xx = 0; xx < w; xx++) {
-            for (int yy = 0; yy < h; yy++) {
-                int pixel = image.getRGB(xx, yy);
-                int red = (pixel >> 16) & 0xff;
-                int green = (pixel >> 8) & 0xff;
-                int blue = (pixel) & 0xff;
-
-                if (red == 255) {
-                    handler.addObject(new Block(xx * 32, yy * 32, ID.Block));
-                }
-
-                if (blue == 255) {
-//                    handler.addObject(new Robot(xx*32, yy*32, ID.player , handler, l));
-                }
+    private void createPosition(Graphics g){
+        g.setColor(Color.GRAY);
+        g.fillRect(600, 10, 150, 50);
+        g.setColor(Color.WHITE);
+        for (int i = 0; i < handler.object.size(); i++){
+            if (handler.object.get(i).getId() == ID.player){
+                System.out.println("x : " + (handler.object.get(i).getX() / 32 )  + ", y : " + (handler.object.get(i).getY() / 32));
+                g.drawString("X : " +
+                                String.valueOf((handler.object.get(i).getX()-2) / 32) + ", Y :" +
+                                String.valueOf((handler.object.get(i).getY()-2) / 32),
+                        625, 40);
             }
         }
-    }
 
-    private void tileMap(BufferedImage image, Graphics g) {
-        int x = 0, y = 0;
-        for (int i = 0; i < 100; i++) {
-            for (int j = 0; j < 100; j++) {
-                g.drawImage(image, x, y, 32, 32, null);
-                x += 32;
-            }
-            y += 32;
-            x = 0;
-        }
     }
 
     public static void main(String[] args) {

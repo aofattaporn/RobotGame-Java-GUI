@@ -1,7 +1,5 @@
 package object;
 
-import com.company.ID;
-
 import java.awt.*;
 
 public abstract class GameObject {

@@ -1,14 +1,11 @@
 package object;
 
-import com.company.BufferImagesLoader;
-import com.company.Handler;
-import com.company.ID;
+import controller.BufferImagesLoader;
+import minaGame.Game;
+import minaGame.Handler;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Objects;
 
 public class Robot extends GameObject {
 
@@ -40,18 +37,18 @@ public class Robot extends GameObject {
         y += velY;
 
         // movement
-        if (handler.isUp()) {
+        if (handler.isUp() && y > Game.BOX_SIZE *2 ) {
             if (image == robotUP) {
                 velY = -32;
             }
             image = robotUP;
             direct = "up";
 
-        } else if (!handler.isDown()) {
+        } else if (!handler.isDown() ) {
             velY = 0;
         }
 
-        if (handler.isDown()) {
+        if (handler.isDown() && y < Game.BOX_SIZE * 81) {
             if (image == rotbotDown) {
                 velY = 32;
             }
@@ -60,7 +57,7 @@ public class Robot extends GameObject {
 
         } else if (!handler.isUp()) velY = 0;
 
-        if (handler.isRight()) {
+        if (handler.isRight() && x < Game.BOX_SIZE * 101) {
             if (image == robotRight) {
                 velX = 32;
             }
@@ -68,7 +65,7 @@ public class Robot extends GameObject {
             direct = "right";
         } else if (!handler.isLeft()) velX = 0;
 
-        if (handler.isLeft()) {
+        if (handler.isLeft() && x > Game.BOX_SIZE * 2) {
             if (image == robotLeft) velX = -32;
             image = robotLeft;
             direct = "left";
@@ -97,7 +94,7 @@ public class Robot extends GameObject {
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(x, y, 40, 40);
+        return new Rectangle(x, y, 32, 32);
     }
 
     public String getDirect() {

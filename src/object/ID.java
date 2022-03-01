@@ -1,4 +1,4 @@
-package com.company;
+package object;
 
 public enum ID {
 

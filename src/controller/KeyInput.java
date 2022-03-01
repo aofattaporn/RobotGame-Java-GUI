@@ -1,5 +1,6 @@
-package com.company;
+package controller;
 
+import minaGame.Handler;
 import object.GameObject;
 import object.ID;
 
