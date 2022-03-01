@@ -14,6 +14,7 @@ public class Robot extends GameObject {
     private String direct;
     private boolean state = false;
     private BufferImagesLoader loader;
+    public static int hp = 100;
 
     public Robot(int x, int y, ID id, Handler handler, BufferImagesLoader loader) {
         super(x, y, id);
@@ -82,6 +83,20 @@ public class Robot extends GameObject {
         }
 
 
+        for (int i = 0; i < handler.object.size(); i++ ){
+            GameObject tempObject = handler.object.get(i);
+
+            if (getBounds().intersects(tempObject.getBounds())) {
+                if (tempObject.getId() == ID.Block) {
+
+                    Robot.hp -= 5;
+                    handler.removeObject(tempObject);
+
+                }
+            }
+        }
+
+
 
     }
 
@@ -89,6 +104,7 @@ public class Robot extends GameObject {
     public void render(Graphics g) {
 
         g.drawImage(image, x, y, 40, 40, null);
+
 
     }
 

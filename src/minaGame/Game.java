@@ -4,7 +4,7 @@ import controller.BufferImagesLoader;
 import controller.Camera;
 import controller.KeyInput;
 import entity.ElementPosition;
-import object.Block;
+import object.Bomb;
 import object.BlockTile;
 import object.ID;
 import object.Robot;
@@ -12,7 +12,6 @@ import object.Robot;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.sql.Array;
 import java.util.ArrayList;
 
 public class Game extends Canvas implements Runnable {
@@ -55,35 +54,8 @@ public class Game extends Canvas implements Runnable {
         // create bomb
         randElement(ABomb, 240);
 
-        // create ET
-
-
-
     }
 
-    private void randElement(ArrayList<ElementPosition> element, int size){
-
-        int randBombX = 0;
-        int randBombY = 0;
-
-        for (int i = 0; i < size; i++) {
-
-            randBombX = getRandomPlayer(2, 102);
-            randBombY = getRandomPlayer(2, 82);
-
-            ABomb.add(new ElementPosition(randBombX, randBombY));
-            handler.addObject(new Block(randBombX * BOX_SIZE, randBombY * BOX_SIZE, ID.Block));
-
-        }
-    }
-
-    private void createTileMap() {
-        handler.addObject(new BlockTile(2, 2, tile, ID.Block));
-    }
-
-    private int getRandomPlayer(int min, int max) {
-        return (int) ((Math.random() * (max - min)) + min);
-    }
 
     public void start() {
         isRunning = true;
@@ -169,11 +141,31 @@ public class Game extends Canvas implements Runnable {
         // create position box
         createPosition(g);
 
+        // create HP
+        createHP(g);
+
 
         /////////////////////////////////
         g.dispose();
         bs.show();
 
+    }
+
+    private void createHP(Graphics g){
+
+        // create HP
+        g.setColor(Color.gray);
+        g.fillRect(5, 5, 200, 32);
+        if (Robot.hp < 40) g.setColor(Color.red);
+        else g.setColor(Color.green);
+        g.fillRect(5, 5, Robot.hp * 2, 32);
+        g.setColor(Color.BLACK);
+        g.drawRect(5, 5, 200, 32);
+
+        g.setColor(Color.white);
+        g.drawString("HP : " + String.valueOf(Robot.hp), 6, 52);
+
+        g.setColor(Color.white);
     }
 
     private void createPosition(Graphics g) {
@@ -190,6 +182,30 @@ public class Game extends Canvas implements Runnable {
             }
         }
 
+    }
+
+    private void randElement(ArrayList<ElementPosition> element, int size) {
+
+        int randBombX = 0;
+        int randBombY = 0;
+
+        for (int i = 0; i < size; i++) {
+
+            randBombX = getRandomPlayer(2, 102);
+            randBombY = getRandomPlayer(2, 82);
+
+            ABomb.add(new ElementPosition(randBombX, randBombY));
+            handler.addObject(new Bomb(randBombX * BOX_SIZE, randBombY * BOX_SIZE, ID.Block, handler));
+
+        }
+    }
+
+    private void createTileMap() {
+        handler.addObject(new BlockTile(2, 2, tile, ID.Block));
+    }
+
+    private int getRandomPlayer(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
     }
 
     public static void main(String[] args) {

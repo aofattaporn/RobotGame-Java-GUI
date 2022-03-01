@@ -51,7 +51,6 @@ public class Camera {
 
         }
 
-
     }
 
     public float getCamX() {
