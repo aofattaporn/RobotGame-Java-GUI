@@ -37,6 +37,7 @@ public class Game extends Canvas implements Runnable {
         int randomX = getRandomPlayer(2, 102);
         int randomY = getRandomPlayer(2, 82);
 
+
         handler = new Handler();
         camera = new Camera(this);
         this.addKeyListener(new KeyInput(handler));
