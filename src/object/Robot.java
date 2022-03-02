@@ -75,7 +75,7 @@ public class Robot extends GameObject {
         if (handler.isSpaceBar()) {
             // TODO : set bullet create object
             if (!state){
-                handler.addObject(new Gun(x, y, ID.Bullet, this));
+                handler.addObject(new Gun(x, y, ID.Bullet, this, handler));
                 state = true;
             }else {
                 state = false;

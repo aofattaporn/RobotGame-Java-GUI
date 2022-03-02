@@ -8,6 +8,7 @@ import entity.ElementPosition;
 import object.*;
 import object.Robot;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,9 +23,8 @@ public class Game extends Canvas implements Runnable {
     private final int WIDTH = 800;
     private final int HEIGHT = 640;
     public static int BOX_SIZE = 32;
-    private ArrayList<ElementPosition> ABomb;
-    private ArrayList<ElementPosition> AET;
-
+    public ArrayList<ElementPosition> ABomb;
+    public ArrayList<ElementPosition> AET;
 
     // dependency injection
     private boolean isRunning = false;
@@ -33,9 +33,7 @@ public class Game extends Canvas implements Runnable {
     private Handler handler;
     private Camera camera;
     private BufferedImage tile = null;
-    private Timer timer;
 
-    // constructor
     public Game() {
 
         // create window
@@ -63,16 +61,12 @@ public class Game extends Canvas implements Runnable {
 
         // create ET
         randElement(AET, ID.ET, 120);
-
-//        timer.s
-
     }
-
 
     public void start() {
         isRunning = true;
         mainThread = new Thread(this);
-        timerThread = new Thread(new timer());
+        timerThread = new Thread(new timer(this));
 
         // start thread
         timerThread.start();
@@ -122,15 +116,20 @@ public class Game extends Canvas implements Runnable {
         stop();
     }
 
-    // update method
     public void tick() {
         for (int i = 0; i < handler.object.size(); i++) {
             camera.tick(handler.object.get(i));
+            GameObject tempObject = handler.object.get(i);
+
+            if (getBounds().intersects(tempObject.getBounds())) {
+                if (tempObject.getId() == ID.Bullet) {
+                    Robot.hp -= 50;
+                }
+            }
         }
         handler.tick();
     }
 
-    // render screen
     public void render() {
         BufferStrategy bs = this.getBufferStrategy();
 
@@ -200,7 +199,7 @@ public class Game extends Canvas implements Runnable {
 
     }
 
-    private void randElement(ArrayList<ElementPosition> element, ID id, int size) {
+    public void randElement(ArrayList<ElementPosition> element, ID id, int size) {
 
         int randBombX = 0;
         int randBombY = 0;
@@ -237,9 +236,13 @@ public class Game extends Canvas implements Runnable {
         return (int) ((Math.random() * (max - min)) + min);
     }
 
-
     public static void main(String[] args) {
-        new Game();
+
+        new HomeWindow(800, 600, "Robot Game");
+
+//        new Game();
     }
+
+
 
 }

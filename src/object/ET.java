@@ -10,7 +10,7 @@ public class ET extends GameObject{
     private final int[] randomET  = {50, 65, 90, 95};
     private int random;
     private Handler handler;
-    private static int destroy;
+    public static int destroy;
 
     public ET(int x, int y, ID id, Handler handler) {
         super(x, y, id);
