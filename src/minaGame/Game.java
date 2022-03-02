@@ -3,16 +3,18 @@ package minaGame;
 import controller.BufferImagesLoader;
 import controller.Camera;
 import controller.KeyInput;
+import controller.timer;
 import entity.ElementPosition;
-import object.Bomb;
-import object.BlockTile;
-import object.ID;
+import object.*;
 import object.Robot;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class Game extends Canvas implements Runnable {
 
@@ -20,14 +22,18 @@ public class Game extends Canvas implements Runnable {
     private final int WIDTH = 800;
     private final int HEIGHT = 640;
     public static int BOX_SIZE = 32;
-    ArrayList<ElementPosition> ABomb;
+    private ArrayList<ElementPosition> ABomb;
+    private ArrayList<ElementPosition> AET;
+
 
     // dependency injection
     private boolean isRunning = false;
     private Thread mainThread;
+    private Thread timerThread;
     private Handler handler;
     private Camera camera;
     private BufferedImage tile = null;
+    private Timer timer;
 
     // constructor
     public Game() {
@@ -38,6 +44,7 @@ public class Game extends Canvas implements Runnable {
         // run main threading
         start();
         ABomb = new ArrayList<ElementPosition>();
+        AET = new ArrayList<ElementPosition>();
 
         handler = new Handler();
         camera = new Camera(this);
@@ -49,10 +56,15 @@ public class Game extends Canvas implements Runnable {
         createTileMap();
 
         // add robot character
-        handler.addObject(new Robot(BOX_SIZE * 2, BOX_SIZE * 2, ID.player, handler, loader));
+        handler.addObject(new Robot(BOX_SIZE * getRandomPlayer(2, 102), BOX_SIZE * getRandomPlayer(2, 82), ID.player, handler, loader));
 
         // create bomb
-        randElement(ABomb, 240);
+        randElement(ABomb, ID.Bomb, 240);
+
+        // create ET
+        randElement(AET, ID.ET, 120);
+
+//        timer.s
 
     }
 
@@ -60,6 +72,10 @@ public class Game extends Canvas implements Runnable {
     public void start() {
         isRunning = true;
         mainThread = new Thread(this);
+        timerThread = new Thread(new timer());
+
+        // start thread
+        timerThread.start();
         mainThread.start();
     }
 
@@ -151,7 +167,7 @@ public class Game extends Canvas implements Runnable {
 
     }
 
-    private void createHP(Graphics g){
+    private void createHP(Graphics g) {
 
         // create HP
         g.setColor(Color.gray);
@@ -184,7 +200,7 @@ public class Game extends Canvas implements Runnable {
 
     }
 
-    private void randElement(ArrayList<ElementPosition> element, int size) {
+    private void randElement(ArrayList<ElementPosition> element, ID id, int size) {
 
         int randBombX = 0;
         int randBombY = 0;
@@ -194,8 +210,21 @@ public class Game extends Canvas implements Runnable {
             randBombX = getRandomPlayer(2, 102);
             randBombY = getRandomPlayer(2, 82);
 
-            ABomb.add(new ElementPosition(randBombX, randBombY));
-            handler.addObject(new Bomb(randBombX * BOX_SIZE, randBombY * BOX_SIZE, ID.Block, handler));
+            if (element == ABomb) {
+                element.add(new ElementPosition(randBombX, randBombY));
+                handler.addObject(new Bomb(randBombX * BOX_SIZE, randBombY * BOX_SIZE, ID.Bomb, handler));
+            } else if (element == AET) {
+                for (int j = 0; j < ABomb.size(); j++) {
+                    if (randBombX == ABomb.get(j).getElemX() && randBombY == ABomb.get(j).getElemY()) {
+                        element.add(new ElementPosition(randBombX, randBombY));
+                        randBombX = getRandomPlayer(2, 102);
+                        randBombY = getRandomPlayer(2, 82);
+                        j = 0;
+                    }
+                }
+                handler.addObject(new ET(randBombX * BOX_SIZE, randBombY * BOX_SIZE, ID.ET, handler));
+
+            }
 
         }
     }
@@ -207,6 +236,7 @@ public class Game extends Canvas implements Runnable {
     private int getRandomPlayer(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
     }
+
 
     public static void main(String[] args) {
         new Game();

@@ -87,7 +87,7 @@ public class Robot extends GameObject {
             GameObject tempObject = handler.object.get(i);
 
             if (getBounds().intersects(tempObject.getBounds())) {
-                if (tempObject.getId() == ID.Block) {
+                if (tempObject.getId() == ID.Bomb) {
 
                     Robot.hp -= 5;
                     handler.removeObject(tempObject);
@@ -104,7 +104,6 @@ public class Robot extends GameObject {
     public void render(Graphics g) {
 
         g.drawImage(image, x, y, 40, 40, null);
-
 
     }
 
