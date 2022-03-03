@@ -14,12 +14,14 @@ public class Robot extends GameObject {
     private String direct;
     private boolean state = false;
     private BufferImagesLoader loader;
+    private String username;
     public static int hp = 100;
 
-    public Robot(int x, int y, ID id, Handler handler, BufferImagesLoader loader) {
+    public Robot(int x, int y, ID id, Handler handler,String username, BufferImagesLoader loader) {
         super(x, y, id);
         this.handler = handler;
         this.loader = loader;
+        this.username = username;
 
         // loader image
         robotUP = loader.loadImage("/res/up.png");
@@ -104,6 +106,10 @@ public class Robot extends GameObject {
     public void render(Graphics g) {
 
         g.drawImage(image, x, y, 40, 40, null);
+
+        if (username != null){
+            g.drawString(username, x + 10, y + 10);
+        }
 
     }
 

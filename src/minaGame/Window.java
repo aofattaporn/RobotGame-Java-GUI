@@ -19,5 +19,12 @@ public class Window {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
+        JFrame x = new JFrame(name);
+        x.setPreferredSize(new Dimension(width, height));
+        x.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        x.setVisible(true);
+
+
     }
+
 }

@@ -5,17 +5,18 @@ import controller.Camera;
 import controller.KeyInput;
 import controller.timer;
 import entity.ElementPosition;
+import net.GameClient;
+import net.GameServer;
 import object.*;
 import object.Robot;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Timer;
 
 public class Game extends Canvas implements Runnable {
 
@@ -30,22 +31,34 @@ public class Game extends Canvas implements Runnable {
     private boolean isRunning = false;
     private Thread mainThread;
     private Thread timerThread;
+    private Thread clientThread;
+    private Thread severThread;
     private Handler handler;
     private Camera camera;
     private BufferedImage tile = null;
 
+    // multiplayer
+    private GameClient socketClient;
+    private GameServer socketSever;
+
+
     public Game() {
+
+        System.out.println("Hello world");
 
         // create window
         new Window(WIDTH, HEIGHT, "Robot Game", this);
 
-        // run main threading
-        start();
         ABomb = new ArrayList<ElementPosition>();
         AET = new ArrayList<ElementPosition>();
 
         handler = new Handler();
         camera = new Camera(this);
+
+        // run main threading
+        start();
+        connectSever();
+
         this.addKeyListener(new KeyInput(handler));
 
         // create background
@@ -54,13 +67,20 @@ public class Game extends Canvas implements Runnable {
         createTileMap();
 
         // add robot character
-        handler.addObject(new Robot(BOX_SIZE * getRandomPlayer(2, 102), BOX_SIZE * getRandomPlayer(2, 82), ID.player, handler, loader));
+        handler.addObject(new Robot(BOX_SIZE * getRandomPlayer(2, 102), BOX_SIZE * getRandomPlayer(2, 82), ID.player, handler, JOptionPane.showInputDialog(this, "Please enter a name"),  loader));
 
         // create bomb
         randElement(ABomb, ID.Bomb, 240);
 
         // create ET
         randElement(AET, ID.ET, 120);
+
+        socketClient.sendData("ping".getBytes());
+
+
+
+
+
     }
 
     public void start() {
@@ -71,6 +91,22 @@ public class Game extends Canvas implements Runnable {
         // start thread
         timerThread.start();
         mainThread.start();
+
+    }
+
+    private void connectSever(){
+        if (JOptionPane.showConfirmDialog(this, "Do you want to run need a sever") == 0){
+            socketSever = new GameServer(this);
+            severThread = new Thread(socketSever);
+
+            severThread.start();
+        }
+
+        // connect client
+        socketClient = new GameClient(this, "localhost");
+        clientThread = new Thread(socketClient);
+
+        clientThread.start();
     }
 
     public void stop() {
@@ -109,6 +145,7 @@ public class Game extends Canvas implements Runnable {
 
             if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
+
                 frames = 0;
                 // updates = 0;
             }
@@ -238,9 +275,9 @@ public class Game extends Canvas implements Runnable {
 
     public static void main(String[] args) {
 
-        new HomeWindow(800, 600, "Robot Game");
+//        new HomeWindow(800, 600, "Robot Game");
 
-//        new Game();
+        new Game();
     }
 
 
