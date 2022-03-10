@@ -67,7 +67,7 @@ public class Game extends Canvas implements Runnable {
         createTileMap();
 
         // add robot character
-        handler.addObject(new Robot(BOX_SIZE * getRandomPlayer(2, 102), BOX_SIZE * getRandomPlayer(2, 82), ID.player, handler, JOptionPane.showInputDialog(this, "Please enter a name"),  loader));
+        handler.addObject(new Robot(BOX_SIZE * getRandomPlayer(2, 102), BOX_SIZE * getRandomPlayer(2, 82), ID.player, handler, JOptionPane.showInputDialog(this, "Please enter a name"), loader));
 
         // create bomb
         randElement(ABomb, ID.Bomb, 240);
@@ -76,10 +76,6 @@ public class Game extends Canvas implements Runnable {
         randElement(AET, ID.ET, 120);
 
         socketClient.sendData("ping".getBytes());
-
-
-
-
 
     }
 
@@ -94,8 +90,8 @@ public class Game extends Canvas implements Runnable {
 
     }
 
-    private void connectSever(){
-        if (JOptionPane.showConfirmDialog(this, "Do you want to run need a sever") == 0){
+    private void connectSever() {
+        if (JOptionPane.showConfirmDialog(this, "Do you want to run need a sever") == 0) {
             socketSever = new GameServer(this);
             severThread = new Thread(socketSever);
 
@@ -279,7 +275,6 @@ public class Game extends Canvas implements Runnable {
 
         new Game();
     }
-
 
 
 }
