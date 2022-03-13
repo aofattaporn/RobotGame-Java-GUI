@@ -5,6 +5,7 @@ import controller.Camera;
 import controller.KeyInput;
 import controller.timer;
 import entity.ElementPosition;
+import entity.MyPosition;
 import object.*;
 import object.Robot;
 
@@ -12,9 +13,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.io.DataOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -24,8 +24,11 @@ public class Game extends Canvas implements Runnable {
     private final int WIDTH = 800;
     private final int HEIGHT = 640;
     public static int BOX_SIZE = 32;
+    public MyPosition player1;
+    public MyPosition player2;
     public ArrayList<ElementPosition> ABomb;
     public ArrayList<ElementPosition> AET;
+    public String username;
 
     // dependency injection
     private boolean isRunning = false;
@@ -38,9 +41,8 @@ public class Game extends Canvas implements Runnable {
     private BufferedImage tile = null;
     private Socket socket;
 
-    public Game(Socket socket) throws IOException {
+    public Game(BufferedWriter bufferedWriter) throws IOException {
 
-        this.socket = socket;
 
         // create window
         new Window(WIDTH, HEIGHT, "Robot Game", this);
@@ -61,13 +63,16 @@ public class Game extends Canvas implements Runnable {
         tile = loader.loadImage("/res/tile.png");
         createTileMap();
 
-        // add robot character
-        handler.addObject(new Robot(BOX_SIZE * getRandomPlayer(2, 102), BOX_SIZE * getRandomPlayer(2, 82), ID.player, handler, JOptionPane.showInputDialog(this, "Please enter a name"), loader));
+        // add robot character -> send message
+        String username = JOptionPane.showInputDialog(this, "Please enter a name");
+        player1 = new MyPosition(getRandomPlayer(2, 90), getRandomPlayer(2, 90));
+        handler.addObject(new Robot(BOX_SIZE * player1.getPositionX(), BOX_SIZE * player1.getPositionY(), ID.player, handler, username, loader));
+        bufferedWriter.write(String.valueOf(player1.getPositionX()) + "" + String.valueOf(player1.getPositionY()));
+        bufferedWriter.newLine();
+        bufferedWriter.flush();
 
-        // send message to server
-        DataOutputStream outToServer = new DataOutputStream(socket.getOutputStream());
-        outToServer.writeUTF("create player");
-
+        player2 = new MyPosition(getRandomPlayer(2, 102), getRandomPlayer(2, 102));
+        handler.addObject(new Robot(BOX_SIZE * player2.getPositionX(), BOX_SIZE * player2.getPositionY(), ID.player, username, loader));
 
 
 
@@ -207,7 +212,6 @@ public class Game extends Canvas implements Runnable {
         g.setColor(Color.WHITE);
         for (int i = 0; i < handler.object.size(); i++) {
             if (handler.object.get(i).getId() == ID.player) {
-//                System.out.println("x : " + (handler.object.get(i).getX() / 32 )  + ", y : " + (handler.object.get(i).getY() / 32));
                 g.drawString("X : " +
                                 String.valueOf((handler.object.get(i).getX() - 2) / 32) + ", Y :" +
                                 String.valueOf((handler.object.get(i).getY() - 2) / 32),

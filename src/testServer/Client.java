@@ -1,5 +1,7 @@
 package testServer;
 
+import minaGame.Game;
+
 import javax.imageio.IIOException;
 import java.io.*;
 import java.net.Socket;
@@ -12,18 +14,26 @@ public class Client {
     private BufferedWriter bufferedWriter;
     private String username;
 
+    private Game game;
+
+    // constructor
     public Client(Socket socket, String username){
         try{
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
             this.username = username;
+            this.game = new Game(bufferedWriter);
+
+
 
         }catch (IOException e){
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
+    // send message
     public void sendMessage(){
         try{
             bufferedWriter.write(username);
@@ -32,8 +42,18 @@ public class Client {
 
             Scanner scanner = new Scanner(System.in);
 
+            // send Message to another client
             while (socket.isConnected()){
+
+                /////////////////////////////////////////////
+
                 String messageToSend = scanner.nextLine();
+
+
+
+                /////////////////////////////////////////////
+
+
                 bufferedWriter.write(username + " : " + messageToSend);
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
@@ -44,6 +64,7 @@ public class Client {
         }
     }
 
+    // listen msg from another client
     public void listenForMessage(){
         new Thread(new Runnable() {
             @Override
@@ -52,6 +73,8 @@ public class Client {
 
                 while (socket.isConnected()){
                     try {
+
+                        // check object
                         msgFromGroupChat = bufferedReader.readLine();
                         System.out.println(msgFromGroupChat);
 
@@ -63,6 +86,7 @@ public class Client {
         }).start();
     }
 
+    // close evetyting
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
         try {
             if (bufferedReader != null){
@@ -88,6 +112,14 @@ public class Client {
         client.listenForMessage();
         client.sendMessage();
 
+    }
+
+    private void checkMsg(String msg){
+        if (msg.equals(Integer.valueOf(msg) > 0)){
+            // read for create object
+            System.out.println(Integer.valueOf(msg));
+
+        }
     }
 
 
