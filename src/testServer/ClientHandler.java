@@ -22,9 +22,7 @@ public class ClientHandler implements Runnable{
             this.clientUsername = bufferedReader.readLine();
             clientHandlers.add(this);
 
-            broadcastMessage(clientUsername);
-            broadcastMessage(clientUsername);
-
+            broadcastMessage(clientUsername + " enter server!!!");
 
         } catch (IOException e) {
 
@@ -53,6 +51,8 @@ public class ClientHandler implements Runnable{
     }
 
     public void broadcastMessage(String messageToSend){
+
+        // send message to all client
         for (ClientHandler clientHandler : clientHandlers){
             try {
                 if (!clientHandler.clientUsername.equals(clientHandler)){

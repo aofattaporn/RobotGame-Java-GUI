@@ -14,6 +14,7 @@ public class Server {
 
     public void startServer() {
         try{
+
             while (!serverSocket.isClosed()){
 
                 Socket socket = serverSocket.accept();
@@ -44,7 +45,7 @@ public class Server {
 
     public static void main(String[] args) throws IOException {
 
-        ServerSocket serverSocket = new ServerSocket(1234);
+        ServerSocket serverSocket = new ServerSocket(9999);
 
         // constructor server
         Server server = new Server(serverSocket);

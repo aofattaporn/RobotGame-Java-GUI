@@ -27,23 +27,19 @@ public class client1 {
             DataOutputStream outToServer = new DataOutputStream(socketConnection.getOutputStream());
 
             String SQL="I am  Client 1";
+
             while (true) {
                 outToServer.writeUTF(SQL);
-
-
-                // START GAME
-//            new client2(new Game(socketConnection));
-
 
                 //QUERY PASSING
                 DataInputStream infromClient = new DataInputStream(socketConnection.getInputStream());
                 System.out.println(infromClient.readUTF());
+
             }
 
-
-
-
-
-        } catch (Exception e) {System.out.println(e); }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
+
 }

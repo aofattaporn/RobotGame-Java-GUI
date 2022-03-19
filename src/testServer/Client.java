@@ -19,13 +19,12 @@ public class Client {
     // constructor
     public Client(Socket socket, String username) {
         try {
+
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             this.username = username;
-            this.game = new Game(bufferedWriter);
-
 
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
@@ -99,13 +98,12 @@ public class Client {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter your name for this group : ");
         String username = scanner.nextLine();
-        Socket socket = new Socket("localhost", 1234);
+        Socket socket = new Socket("localhost", 9999);
 
         Client client = new Client(socket, username);
         client.listenForMessage();
         client.sendMessage();
 
     }
-
 
 }
