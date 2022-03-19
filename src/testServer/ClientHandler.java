@@ -22,7 +22,7 @@ public class ClientHandler implements Runnable{
             this.clientUsername = bufferedReader.readLine();
             clientHandlers.add(this);
 
-            broadcastMessage(clientUsername + " enter server!!!");
+            broadcastMessage(clientUsername);
 
         } catch (IOException e) {
 

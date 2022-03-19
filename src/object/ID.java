@@ -6,5 +6,6 @@ public enum ID {
     Block(),
     Bullet(),
     Bomb(),
-    ET();
+    ET(),
+    Enemy();
 }

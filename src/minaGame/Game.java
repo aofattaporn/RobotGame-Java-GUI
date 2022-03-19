@@ -8,15 +8,16 @@ import entity.ElementPosition;
 import entity.MyPosition;
 import object.*;
 import object.Robot;
+import testServer.Client;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Game extends Canvas implements Runnable {
 
@@ -34,21 +35,33 @@ public class Game extends Canvas implements Runnable {
     private boolean isRunning = false;
     private Thread mainThread;
     private Thread timerThread;
-    private Thread clientThread;
-    private Thread severThread;
     private Handler handler;
     private Camera camera;
     private BufferedImage tile = null;
+
+    // network
     private Socket socket;
+    private BufferedReader bufferedReader;
+    private BufferedWriter bufferedWriter;
 
-    public Game(BufferedWriter bufferedWriter) throws IOException {
 
+    //  constructor method
+    public Game(Socket socket) throws IOException {
 
         // create window
         new Window(WIDTH, HEIGHT, "Robot Game", this);
 
-//        ABomb = new ArrayList<ElementPosition>();
-//        AET = new ArrayList<ElementPosition>();
+        // network connection
+        try {
+
+            this.socket = socket;
+            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        } catch (IOException e) {
+            closeEverything(socket, bufferedReader, bufferedWriter);
+        }
+
 
         handler = new Handler();
         camera = new Camera(this);
@@ -64,17 +77,12 @@ public class Game extends Canvas implements Runnable {
         createTileMap();
 
         // add robot character -> send message
-//        String username = JOptionPane.showInputDialog(this, "Please enter a name");
+        String username = JOptionPane.showInputDialog(this, "Please enter a name");
+        this.username = username;
         player1 = new MyPosition(getRandomPlayer(2, 90), getRandomPlayer(2, 90));
-        handler.addObject(new Robot(BOX_SIZE * player1.getPositionX(), BOX_SIZE * player1.getPositionY(), ID.player, handler, "S", loader));
+        handler.addObject(new Robot(BOX_SIZE * player1.getPositionX(), BOX_SIZE * player1.getPositionY(), ID.player, handler, username, loader));
+        sendMSG( username + " enter server : " + player1.getPositionX() + " " + player1.getPositionY());
 
-
-
-        // create bomb
-//        randElement(ABomb, ID.Bomb, 240);
-
-        // create ET
-//        randElement(AET, ID.ET, 120);
 
     }
 
@@ -111,6 +119,7 @@ public class Game extends Canvas implements Runnable {
         int frames = 0;
 
         while (isRunning) {
+
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
@@ -210,6 +219,7 @@ public class Game extends Canvas implements Runnable {
                                 String.valueOf((handler.object.get(i).getX() - 2) / 32) + ", Y :" +
                                 String.valueOf((handler.object.get(i).getY() - 2) / 32),
                         625, 40);
+                sendMSG(username + " move to : " + String.valueOf((handler.object.get(i).getX() - 2) / 32) + " " + String.valueOf((handler.object.get(i).getY() - 2) / 32));
             }
         }
 
@@ -252,7 +262,12 @@ public class Game extends Canvas implements Runnable {
         return (int) ((Math.random() * (max - min)) + min);
     }
 
-    public void sendMSG(String msg, BufferedWriter bufferedWriter){
+
+    ////////////////////////////////////////////////////////////////////
+    // Network -> method
+    ////////////////////////////////////////////////////////////////////
+
+    public void sendMSG(String msg) {
         try {
             bufferedWriter.write(String.valueOf(msg));
             bufferedWriter.newLine();
@@ -261,6 +276,100 @@ public class Game extends Canvas implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    // send message
+//    public void sendMessage() {
+//        try {
+//            bufferedWriter.write(username);
+//            bufferedWriter.newLine();
+//            bufferedWriter.flush();
+//
+//            Scanner scanner = new Scanner(System.in);
+//
+//            // send Message to another client
+//            while (socket.isConnected()) {
+//
+////                String messageToSend = scanner.nextLine();
+////                bufferedWriter.write(username + " : " + messageToSend);
+////                bufferedWriter.newLine();
+////                bufferedWriter.flush();
+//
+//            }
+//        } catch (IOException e) {
+//            closeEverything(socket, bufferedReader, bufferedWriter);
+//
+//        }
+//    }
+
+    // listen msg from another client
+    public void listenForMessage() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String msgFromGroupChat;
+
+                while (socket.isConnected()) {
+                    try {
+
+                        // check object
+                        msgFromGroupChat = bufferedReader.readLine();
+                        System.out.println(msgFromGroupChat);
+
+                        // check whos instruction
+                        if (!msgFromGroupChat.contains(username)) {
+                            commandEnemy(msgFromGroupChat);
+                        }
+
+                    } catch (IOException e) {
+                        closeEverything(socket, bufferedReader, bufferedWriter);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    private void commandEnemy(String msgFromGroupChat){
+        if (msgFromGroupChat.contains("enter server")){
+            // substring
+            int indexColon = msgFromGroupChat.indexOf(":");
+            indexColon += 2;
+            String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
+            String position[] = newMsgFromGroupChat.split(" ");
+            System.out.println(position[0]);
+            System.out.println(position[1]);
+
+            // create enemy
+            handler.addObject(new Enemy(BOX_SIZE * Integer.parseInt(position[0]), BOX_SIZE * Integer.parseInt(position[1]), ID.Enemy, handler, username, null));
+
+        }
+    }
+
+    // close evetyting
+    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
+        try {
+            if (bufferedReader != null) {
+                bufferedReader.close();
+            }
+            if (bufferedWriter != null) {
+                bufferedWriter.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        Socket socket = new Socket("localhost", 9999);
+        Game client = new Game(socket);
+        client.listenForMessage();
+
+
+
     }
 
 
