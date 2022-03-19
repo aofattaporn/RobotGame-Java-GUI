@@ -17,8 +17,8 @@ public class Client {
     private Game game;
 
     // constructor
-    public Client(Socket socket, String username){
-        try{
+    public Client(Socket socket, String username) {
+        try {
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -27,15 +27,14 @@ public class Client {
             this.game = new Game(bufferedWriter);
 
 
-
-        }catch (IOException e){
+        } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
     // send message
-    public void sendMessage(){
-        try{
+    public void sendMessage() {
+        try {
             bufferedWriter.write(username);
             bufferedWriter.newLine();
             bufferedWriter.flush();
@@ -43,35 +42,28 @@ public class Client {
             Scanner scanner = new Scanner(System.in);
 
             // send Message to another client
-            while (socket.isConnected()){
-
-                /////////////////////////////////////////////
+            while (socket.isConnected()) {
 
                 String messageToSend = scanner.nextLine();
-
-
-
-                /////////////////////////////////////////////
-
-
                 bufferedWriter.write(username + " : " + messageToSend);
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
+
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
 
         }
     }
 
     // listen msg from another client
-    public void listenForMessage(){
+    public void listenForMessage() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String msgFromGroupChat ;
+                String msgFromGroupChat;
 
-                while (socket.isConnected()){
+                while (socket.isConnected()) {
                     try {
 
                         // check object
@@ -87,15 +79,15 @@ public class Client {
     }
 
     // close evetyting
-    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
+    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         try {
-            if (bufferedReader != null){
+            if (bufferedReader != null) {
                 bufferedReader.close();
             }
-            if (bufferedWriter != null){
+            if (bufferedWriter != null) {
                 bufferedWriter.close();
             }
-            if (socket != null){
+            if (socket != null) {
                 socket.close();
             }
         } catch (IOException e) {
@@ -108,18 +100,11 @@ public class Client {
         System.out.print("Enter your name for this group : ");
         String username = scanner.nextLine();
         Socket socket = new Socket("localhost", 1234);
+
         Client client = new Client(socket, username);
         client.listenForMessage();
         client.sendMessage();
 
-    }
-
-    private void checkMsg(String msg){
-        if (msg.equals(Integer.valueOf(msg) > 0)){
-            // read for create object
-            System.out.println(Integer.valueOf(msg));
-
-        }
     }
 
 

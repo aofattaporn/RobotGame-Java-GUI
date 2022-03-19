@@ -64,15 +64,9 @@ public class Game extends Canvas implements Runnable {
         createTileMap();
 
         // add robot character -> send message
-        String username = JOptionPane.showInputDialog(this, "Please enter a name");
+//        String username = JOptionPane.showInputDialog(this, "Please enter a name");
         player1 = new MyPosition(getRandomPlayer(2, 90), getRandomPlayer(2, 90));
-        handler.addObject(new Robot(BOX_SIZE * player1.getPositionX(), BOX_SIZE * player1.getPositionY(), ID.player, handler, username, loader));
-        bufferedWriter.write(String.valueOf(player1.getPositionX()) + "" + String.valueOf(player1.getPositionY()));
-        bufferedWriter.newLine();
-        bufferedWriter.flush();
-
-        player2 = new MyPosition(getRandomPlayer(2, 102), getRandomPlayer(2, 102));
-        handler.addObject(new Robot(BOX_SIZE * player2.getPositionX(), BOX_SIZE * player2.getPositionY(), ID.player, username, loader));
+        handler.addObject(new Robot(BOX_SIZE * player1.getPositionX(), BOX_SIZE * player1.getPositionY(), ID.player, handler, "S", loader));
 
 
 
@@ -258,8 +252,15 @@ public class Game extends Canvas implements Runnable {
         return (int) ((Math.random() * (max - min)) + min);
     }
 
-    public static void main(String[] args) {
+    public void sendMSG(String msg, BufferedWriter bufferedWriter){
+        try {
+            bufferedWriter.write(String.valueOf(msg));
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

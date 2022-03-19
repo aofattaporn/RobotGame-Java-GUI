@@ -20,6 +20,7 @@ public class Server {
                 System.out.println("A new client has connected!");
                 ClientHandler clientHandler = new ClientHandler(socket);
 
+                // add each client to server for multi client
                 Thread thread = new Thread(clientHandler);
                 thread.start();
 

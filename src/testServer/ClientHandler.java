@@ -32,6 +32,7 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    // create thread
     @Override
     public void run() {
         String messageFromClient;
