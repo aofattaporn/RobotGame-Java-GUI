@@ -34,24 +34,6 @@ public class Robot extends GameObject {
 
     }
 
-    public Robot(int x, int y, ID id, String username, BufferImagesLoader loader) {
-        super(x, y, id);
-        this.loader = loader;
-        this.username = username;
-
-        // loader image
-        robotUP = loader.loadImage("/res/up.png");
-        rotbotDown = loader.loadImage("/res/down.png");
-        robotLeft = loader.loadImage("/res/left.png");
-        robotRight = loader.loadImage("/res/righ.png");
-
-        // default image
-        image = rotbotDown;
-
-    }
-
-
-
     @Override
     public void tick() {
         x += velX;
@@ -115,8 +97,6 @@ public class Robot extends GameObject {
                 }
             }
         }
-
-
 
     }
 

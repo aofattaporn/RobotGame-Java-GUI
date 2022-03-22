@@ -30,6 +30,7 @@ public class Game extends Canvas implements Runnable {
     public ArrayList<ElementPosition> ABomb;
     public ArrayList<ElementPosition> AET;
     public String username;
+    private int indexEnemy;
 
     // dependency injection
     private boolean isRunning = false;
@@ -278,7 +279,6 @@ public class Game extends Canvas implements Runnable {
         }
     }
 
-
     // send message
 //    public void sendMessage() {
 //        try {
@@ -331,19 +331,39 @@ public class Game extends Canvas implements Runnable {
     }
 
     private void commandEnemy(String msgFromGroupChat){
+        // when someone enter server
         if (msgFromGroupChat.contains("enter server")){
             // substring
             int indexColon = msgFromGroupChat.indexOf(":");
             indexColon += 2;
             String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
             String position[] = newMsgFromGroupChat.split(" ");
-            System.out.println(position[0]);
-            System.out.println(position[1]);
 
             // create enemy
             handler.addObject(new Enemy(BOX_SIZE * Integer.parseInt(position[0]), BOX_SIZE * Integer.parseInt(position[1]), ID.Enemy, handler, username, null));
 
         }
+
+        // when someone move
+        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("move to")){
+
+            int indexColon = msgFromGroupChat.indexOf(":");
+            indexColon += 2;
+
+            String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
+            String position[] = newMsgFromGroupChat.split(" ");
+
+            for (int i = 0 ; i < handler.object.size(); i++){
+                if (handler.object.get(i).getId() == ID.Enemy){
+                    handler.object.get(i).setX(Integer.parseInt(position[0]));
+                    handler.object.get(i).setY(Integer.parseInt(position[1]));
+
+                }
+            }
+
+        }
+
+
     }
 
     // close evetyting
