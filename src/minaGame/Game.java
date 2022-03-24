@@ -8,6 +8,8 @@ import entity.ElementPosition;
 import entity.MyPosition;
 import object.*;
 import object.Robot;
+import testServer.ClientHandler;
+import testServer.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +18,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Game extends Canvas implements Runnable {
@@ -27,6 +31,8 @@ public class Game extends Canvas implements Runnable {
     public MyPosition player1;
     public MyPosition player2;
     public ArrayList<ElementPosition> ABomb;
+    private int[] bombX;
+    private int[] bombY;
     public ArrayList<ElementPosition> AET;
     public String username;
 
@@ -65,6 +71,7 @@ public class Game extends Canvas implements Runnable {
 
         handler = new Handler();
         camera = new Camera(this);
+        this.ABomb = new ArrayList<>();
 
         // run main threading
         start();
@@ -81,6 +88,7 @@ public class Game extends Canvas implements Runnable {
         this.username = username;
         player1 = new MyPosition(getRandomPlayer(2, 90), getRandomPlayer(2, 90));
         handler.addObject(new Robot(BOX_SIZE * player1.getPositionX(), BOX_SIZE * player1.getPositionY(), ID.Robot, handler, username, loader, bufferedWriter));
+
         sendMSG(username + " enter server : " + player1.getPositionX() + " " + player1.getPositionY());
 
     }
@@ -226,30 +234,16 @@ public class Game extends Canvas implements Runnable {
 
     public void randElement(ArrayList<ElementPosition> element, ID id, int size) {
 
-        int randBombX = 0;
-        int randBombY = 0;
-
         for (int i = 0; i < size; i++) {
 
-            randBombX = getRandomPlayer(2, 102);
-            randBombY = getRandomPlayer(2, 82);
-
             if (element == ABomb) {
-                element.add(new ElementPosition(randBombX, randBombY));
-                handler.addObject(new Bomb(randBombX * BOX_SIZE, randBombY * BOX_SIZE, ID.Bomb, handler));
-            } else if (element == AET) {
-                for (int j = 0; j < ABomb.size(); j++) {
-                    if (randBombX == ABomb.get(j).getElemX() && randBombY == ABomb.get(j).getElemY()) {
-                        element.add(new ElementPosition(randBombX, randBombY));
-                        randBombX = getRandomPlayer(2, 102);
-                        randBombY = getRandomPlayer(2, 82);
-                        j = 0;
-                    }
-                }
-                handler.addObject(new ET(randBombX * BOX_SIZE, randBombY * BOX_SIZE, ID.ET, handler));
-
+                handler.addObject(
+                        new ET(
+                                ABomb.get(i).getElemX() * BOX_SIZE,
+                                ABomb.get(i).getElemY() * BOX_SIZE,
+                                ID.Bomb,
+                                handler));
             }
-
         }
     }
 
@@ -260,7 +254,6 @@ public class Game extends Canvas implements Runnable {
     private int getRandomPlayer(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
     }
-
 
     ////////////////////////////////////////////////////////////////////
     // Network -> method
@@ -281,26 +274,28 @@ public class Game extends Canvas implements Runnable {
     public void listenForMessage() {
         new Thread(new Runnable() {
             @Override
-            public void run() {
-                String msgFromGroupChat;
+                public void run() {
+                    String msgFromGroupChat;
 
-                while (socket.isConnected()) {
-                    try {
+                    while (socket.isConnected()) {
+                        try {
 
-                        // check object
-                        msgFromGroupChat = bufferedReader.readLine();
-//                        System.out.println(msgFromGroupChat);
+                            // check object
+                            msgFromGroupChat = bufferedReader.readLine();
 
-                        // check whos instruction
-                        if (!msgFromGroupChat.contains(username)) {
-                            commandEnemy(msgFromGroupChat);
+                            if (msgFromGroupChat.contains("area")){
+                                commandArea(msgFromGroupChat);
+                            }
+
+                            else if (!msgFromGroupChat.contains(username)) {
+                                commandEnemy(msgFromGroupChat);
+                            }
+
+                        } catch (IOException e) {
+                            closeEverything(socket, bufferedReader, bufferedWriter);
                         }
-
-                    } catch (IOException e) {
-                        closeEverything(socket, bufferedReader, bufferedWriter);
                     }
                 }
-            }
         }).start();
     }
 
@@ -316,6 +311,23 @@ public class Game extends Canvas implements Runnable {
 
             // create enemy
             handler.addObject(new Enemy(BOX_SIZE * Integer.parseInt(position[0]), BOX_SIZE * Integer.parseInt(position[1]), ID.Enemy, handler, "enemy", loader));
+
+            // create player
+            sendMSG(username + "have entered server : " + player1.getPositionX() + " " + player1.getPositionY());
+        }
+
+        // when enemy move
+        else if (msgFromGroupChat.contains("have entered server")) {
+
+            // substring
+            int indexColon = msgFromGroupChat.indexOf(":");
+            indexColon += 2;
+            String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
+            String position[] = newMsgFromGroupChat.split(" ");
+
+            // create enemy
+            handler.addObject(new Enemy(BOX_SIZE * Integer.parseInt(position[0]), BOX_SIZE * Integer.parseInt(position[1]), ID.Enemy, handler, "enemy", loader));
+
         }
 
         // when enemy move
@@ -367,30 +379,49 @@ public class Game extends Canvas implements Runnable {
                     bufferedWriter ));
 
         }
+
     }
 
-    // send message
-    private void sendMessage() {
-        try {
-            bufferedWriter.write(username);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
+    private void commandArea(String msgFromGroupChat) {
 
-            Scanner scanner = new Scanner(System.in);
+        if (msgFromGroupChat.contains("BombX")){
+            int indexColon = msgFromGroupChat.indexOf(":");
+            indexColon += 1;
 
-            // send Message to another client
-            while (socket.isConnected()) {
+            String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
+            System.out.println(newMsgFromGroupChat);
 
-//                String messageToSend = scanner.nextLine();
-//                bufferedWriter.write(username + " : " + messageToSend);
-//                bufferedWriter.newLine();
-//                bufferedWriter.flush();
+            String x[] = newMsgFromGroupChat.split(",");
+            this.bombX = new int[x.length];
 
+            for (int i = 0; i < x.length; i++){
+                this.bombX[i] = Integer.parseInt(x[i]);
             }
-        } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+        }
+
+        else if (msgFromGroupChat.contains("BombY")){
+            int indexColon = msgFromGroupChat.indexOf(":");
+            indexColon += 1;
+
+            String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
+
+            String x[] = newMsgFromGroupChat.split(",");
+            this.bombY = new int[x.length + 1];
+
+            for (int i = 0; i < x.length; i++){
+                bombY[i] = Integer.parseInt(x[i]);
+            }
+
+            // create Bomb
+            for (int i = 0; i < bombX.length; i++){
+                ABomb.add(new ElementPosition(bombX[i], bombY[i]));
+            }
+
+            // create Bomb in map
+            randElement(ABomb, ID.Bomb, ABomb.size());
 
         }
+
     }
 
     // close everything
@@ -414,6 +445,10 @@ public class Game extends Canvas implements Runnable {
         Socket socket = new Socket("localhost", 9999);
         Game client = new Game(socket);
         client.listenForMessage();
+
+
+
+
     }
 
 

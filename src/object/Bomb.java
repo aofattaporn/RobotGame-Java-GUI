@@ -26,7 +26,6 @@ public class Bomb extends GameObject{
                 }
             }
         }
-
     }
 
     @Override

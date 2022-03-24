@@ -8,6 +8,8 @@ public class Server {
 
     private ServerSocket serverSocket;
 
+    public static int countClient = 0;
+
     public Server(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
     }
@@ -21,6 +23,7 @@ public class Server {
             while (!serverSocket.isClosed()){
 
                 Socket socket = serverSocket.accept();
+
                 System.out.println("A new client has connected!");
                 ClientHandler clientHandler = new ClientHandler(socket);
 
@@ -44,6 +47,10 @@ public class Server {
 
             e.printStackTrace();
         }
+    }
+
+    public static int setCountClient(int countClient) {
+        return Server.countClient = countClient;
     }
 
     public static void main(String[] args) throws IOException {

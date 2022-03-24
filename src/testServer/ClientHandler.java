@@ -1,10 +1,16 @@
 package testServer;
 
+import entity.ElementPosition;
+import object.Bomb;
+import object.ET;
+import object.ID;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public class ClientHandler implements Runnable{
+public class ClientHandler implements Runnable {
 
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     private Socket socket;
@@ -12,8 +18,17 @@ public class ClientHandler implements Runnable{
     private BufferedWriter bufferedWriter;
     private String clientUsername;
 
+    private ArrayList<ElementPosition> ABomb;
+    private ArrayList<ElementPosition> AET;
+
+    private StringBuilder listX;
+    private StringBuilder listY;
+
     public ClientHandler(Socket socket) {
         try {
+
+            this.listX = new StringBuilder();
+            this.listY = new StringBuilder();
 
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -33,12 +48,30 @@ public class ClientHandler implements Runnable{
     // create thread
     @Override
     public void run() {
+
         String messageFromClient;
 
-        while (socket.isConnected()){
+        while (socket.isConnected()) {
 
             try {
                 messageFromClient = bufferedReader.readLine();
+
+                // check client enter server
+                if (messageFromClient.contains("enter server")){
+                    ++Server.countClient;
+
+                    if (Server.countClient == 1){
+                        // send bomb to client 1
+                        randElement(ABomb, 160);
+                        System.out.println(listX);
+                        System.out.println(listY);
+                        System.out.println("client one create bomb");
+                        broadcastMessage("area BombX :" + String.valueOf(listX));
+                        broadcastMessage("area BombY :" + String.valueOf(listY));
+
+                    }
+                }
+
                 broadcastMessage(messageFromClient);
 
             } catch (IOException e) {
@@ -50,12 +83,13 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    public void broadcastMessage(String messageToSend){
+    public void broadcastMessage(String messageToSend) {
 
         // send message to all client
-        for (ClientHandler clientHandler : clientHandlers){
+        for (ClientHandler clientHandler : clientHandlers) {
             try {
-                if (!clientHandler.clientUsername.equals(clientHandler)){
+                if (!clientHandler.clientUsername.equals(clientHandler)) {
+
                     clientHandler.bufferedWriter.write(messageToSend);
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
@@ -66,27 +100,48 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    public void removeClientHandler(){
+    public void removeClientHandler() {
         clientHandlers.remove(this);
         broadcastMessage("SERVER: " + clientUsername + " has left the chat! ");
 
     }
 
-    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
+    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         removeClientHandler();
         try {
-            if (bufferedReader != null){
+            if (bufferedReader != null) {
                 bufferedReader.close();
             }
-            if (bufferedWriter != null){
+            if (bufferedWriter != null) {
                 bufferedWriter.close();
             }
-            if (socket != null){
+            if (socket != null) {
                 socket.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    public void randElement(ArrayList<ElementPosition> element, int size) {
+
+        int randBombX = 0;
+        int randBombY = 0;
+
+        for (int i = 0; i < size; i++) {
+
+            randBombX = getRandomPlayer(2, 102);
+            randBombY = getRandomPlayer(2, 82);
+
+            this.listX.append(randBombX).append(",");
+            this.listY.append(randBombY).append(",");
+
+        }
+    }
+
+    private int getRandomPlayer(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
+    }
+
 
 }
