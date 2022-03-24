@@ -20,7 +20,7 @@ public class Bomb extends GameObject{
             GameObject tempObject = handler.object.get(i);
 
             if (getBounds().intersects(tempObject.getBounds())) {
-                if (tempObject.getId() == ID.Bullet) {
+                if (tempObject.getId() == ID.BulletRobot) {
                     handler.removeObject(this);
                     handler.removeObject(tempObject);
                 }

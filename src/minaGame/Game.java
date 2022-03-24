@@ -8,7 +8,6 @@ import entity.ElementPosition;
 import entity.MyPosition;
 import object.*;
 import object.Robot;
-import testServer.Client;
 
 import javax.swing.*;
 import java.awt.*;
@@ -81,8 +80,8 @@ public class Game extends Canvas implements Runnable {
         String username = JOptionPane.showInputDialog(this, "Please enter a name");
         this.username = username;
         player1 = new MyPosition(getRandomPlayer(2, 90), getRandomPlayer(2, 90));
-        handler.addObject(new Robot(BOX_SIZE * player1.getPositionX(), BOX_SIZE * player1.getPositionY(), ID.player, handler, username, loader, bufferedWriter));
-        sendMSG( username + " enter server : " + player1.getPositionX() + " " + player1.getPositionY());
+        handler.addObject(new Robot(BOX_SIZE * player1.getPositionX(), BOX_SIZE * player1.getPositionY(), ID.Robot, handler, username, loader, bufferedWriter));
+        sendMSG(username + " enter server : " + player1.getPositionX() + " " + player1.getPositionY());
 
     }
 
@@ -148,7 +147,7 @@ public class Game extends Canvas implements Runnable {
             GameObject tempObject = handler.object.get(i);
 
             if (getBounds().intersects(tempObject.getBounds())) {
-                if (tempObject.getId() == ID.Bullet) {
+                if (tempObject.getId() == ID.BulletRobot) {
                     Robot.hp -= 50;
                 }
             }
@@ -214,7 +213,7 @@ public class Game extends Canvas implements Runnable {
         g.fillRect(600, 10, 150, 50);
         g.setColor(Color.WHITE);
         for (int i = 0; i < handler.object.size(); i++) {
-            if (handler.object.get(i).getId() == ID.player) {
+            if (handler.object.get(i).getId() == ID.Robot) {
                 g.drawString("X : " +
                                 String.valueOf((handler.object.get(i).getX() - 2) / 32) + ", Y :" +
                                 String.valueOf((handler.object.get(i).getY() - 2) / 32),
@@ -305,10 +304,10 @@ public class Game extends Canvas implements Runnable {
         }).start();
     }
 
-    private void commandEnemy(String msgFromGroupChat){
+    private void commandEnemy(String msgFromGroupChat) {
 
         // when someone enter server
-        if (msgFromGroupChat.contains("enter server")){
+        if (msgFromGroupChat.contains("enter server")) {
             // substring
             int indexColon = msgFromGroupChat.indexOf(":");
             indexColon += 2;
@@ -320,7 +319,7 @@ public class Game extends Canvas implements Runnable {
         }
 
         // when enemy move
-        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("move to")){
+        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("move to")) {
 
             int indexColon = msgFromGroupChat.indexOf(":");
             indexColon += 1;
@@ -328,8 +327,8 @@ public class Game extends Canvas implements Runnable {
             String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
             String position[] = newMsgFromGroupChat.split(" ");
 
-            for (int i = 0 ; i < handler.object.size(); i++){
-                if (handler.object.get(i).getId() == ID.Enemy){
+            for (int i = 0; i < handler.object.size(); i++) {
+                if (handler.object.get(i).getId() == ID.Enemy) {
                     handler.object.get(i).setX(Integer.parseInt(position[0]));
                     handler.object.get(i).setY(Integer.parseInt(position[1]));
                 }
@@ -338,25 +337,36 @@ public class Game extends Canvas implements Runnable {
         }
 
         // when enemy change direct
-        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("direct")){
+        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("direct")) {
             int indexColon = msgFromGroupChat.indexOf(":");
             indexColon += 1;
 
             String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
 
-            for (int i = 0 ; i < handler.object.size(); i++){
-                if (handler.object.get(i).getId() == ID.Enemy){
+            for (int i = 0; i < handler.object.size(); i++) {
+                if (handler.object.get(i).getId() == ID.Enemy) {
                     Enemy.direct = newMsgFromGroupChat;
                 }
             }
-
-
-
         }
 
+        // when enemy change shooting
+        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("shoot")) {
+            int indexColon = msgFromGroupChat.indexOf(":");
+            indexColon += 1;
 
+            System.out.println(msgFromGroupChat);
+            String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
+            String positionBullet[] = newMsgFromGroupChat.split(" ");
 
+            handler.object.add(new BulletRobot(
+                    Integer.parseInt(positionBullet[0]),
+                    Integer.parseInt(positionBullet[1]),
+                    ID.BulletEnemy,
+                    handler,
+                    bufferedWriter ));
 
+        }
     }
 
     // send message
@@ -383,8 +393,7 @@ public class Game extends Canvas implements Runnable {
         }
     }
 
-
-    // close evetyting
+    // close everything
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         try {
             if (bufferedReader != null) {

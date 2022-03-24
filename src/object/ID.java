@@ -2,10 +2,11 @@ package object;
 
 public enum ID {
 
-    player(),
+    Robot(),
+    BulletRobot(),
+    Enemy(),
+    BulletEnemy(),
     Block(),
-    Bullet(),
     Bomb(),
-    ET(),
-    Enemy();
+    ET();
 }

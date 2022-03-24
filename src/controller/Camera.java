@@ -38,7 +38,7 @@ public class Camera {
 
     public void tick(GameObject robot) {
 
-        if (robot.getId() == ID.player) {
+        if (robot.getId() == ID.Robot) {
 
             camX = robot.getX() - VIEWPORT_SIZE_X / 2;
             camY = robot.getY() - VIEWPORT_SIZE_Y / 2;

@@ -27,11 +27,11 @@ public class ET extends GameObject{
             GameObject tempObject = handler.object.get(i);
 
             if (getBounds().intersects(tempObject.getBounds())) {
-                if (tempObject.getId() == ID.Bullet) {
+                if (tempObject.getId() == ID.BulletRobot) {
                     handler.removeObject(tempObject);
                 }
 
-                if ((tempObject.getId() == ID.player)){
+                if ((tempObject.getId() == ID.Robot)){
                     if (Robot.hp < 100) {
                         random -= 5;
                         Robot.hp += 5;
