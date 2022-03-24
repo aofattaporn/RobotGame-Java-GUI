@@ -28,7 +28,6 @@ public class timer implements Runnable{
                     e.printStackTrace();
                 }
                 if (ET.destroy > 0 && i % 20 == 0) game.randElement(game.AET, ID.ET, ET.destroy);
-//                System.out.println(i);
             }
         }
     }

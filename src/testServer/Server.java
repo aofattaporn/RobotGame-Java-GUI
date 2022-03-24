@@ -13,6 +13,9 @@ public class Server {
     }
 
     public void startServer() {
+
+        System.out.println("Staring Serve ...");
+
         try{
 
             while (!serverSocket.isClosed()){

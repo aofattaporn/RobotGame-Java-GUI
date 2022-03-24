@@ -6,6 +6,8 @@ import minaGame.Handler;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.IOException;
 
 public class Robot extends GameObject {
 
@@ -14,14 +16,16 @@ public class Robot extends GameObject {
     private String direct;
     private boolean state = false;
     private BufferImagesLoader loader;
+    private BufferedWriter bufferedWriter;
     private String username;
     public static int hp = 100;
 
-    public Robot(int x, int y, ID id, Handler handler,String username, BufferImagesLoader loader) {
+    public Robot(int x, int y, ID id, Handler handler, String username, BufferImagesLoader loader, BufferedWriter bufferedWriter) {
         super(x, y, id);
         this.handler = handler;
         this.loader = loader;
         this.username = username;
+        this.bufferedWriter = bufferedWriter;
 
         // loader image
         robotUP = loader.loadImage("/res/up.png");
@@ -31,6 +35,8 @@ public class Robot extends GameObject {
 
         // default image
         image = rotbotDown;
+        direct = "down";
+
 
     }
 
@@ -74,6 +80,7 @@ public class Robot extends GameObject {
             direct = "left";
         } else if (!handler.isRight()) velX = 0;
 
+        // event spaceBar
         if (handler.isSpaceBar()) {
             // TODO : set bullet create object
             if (!state){
@@ -84,7 +91,7 @@ public class Robot extends GameObject {
             }
         }
 
-
+        // manage function Bomb
         for (int i = 0; i < handler.object.size(); i++ ){
             GameObject tempObject = handler.object.get(i);
 
@@ -103,6 +110,8 @@ public class Robot extends GameObject {
     @Override
     public void render(Graphics g) {
 
+        sendMSG(username + " change direct :" + direct);
+        sendMSG(username + " move to :" + x + " " + y);
         g.drawImage(image, x, y, 40, 40, null);
 
         if (username != null){
@@ -122,5 +131,16 @@ public class Robot extends GameObject {
 
     public void setDirect(String direct) {
         this.direct = direct;
+    }
+
+    public void sendMSG(String msg) {
+        try {
+            bufferedWriter.write(String.valueOf(msg));
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
