@@ -1,4 +1,4 @@
-package minaGame;
+package mainGame;
 
 import controller.BufferImagesLoader;
 import controller.Camera;
@@ -8,8 +8,6 @@ import entity.ElementPosition;
 import entity.MyPosition;
 import object.*;
 import object.Robot;
-import testServer.ClientHandler;
-import testServer.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,9 +16,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
 
 public class Game extends Canvas implements Runnable {
 
@@ -29,11 +24,9 @@ public class Game extends Canvas implements Runnable {
     private final int HEIGHT = 640;
     public static int BOX_SIZE = 32;
     public MyPosition player1;
-    public MyPosition player2;
-    public ArrayList<ElementPosition> ABomb;
-    private int[] bombX;
-    private int[] bombY;
-    public ArrayList<ElementPosition> AET;
+    public ArrayList<ElementPosition> ABombP1, ABombP2;
+    private int[] bombXP1, bombYP1, bombXP2, bombYP2;
+    public ArrayList<ElementPosition> AETP1, AETP2;
     public String username;
 
     // dependency injection
@@ -71,7 +64,8 @@ public class Game extends Canvas implements Runnable {
 
         handler = new Handler();
         camera = new Camera(this);
-        this.ABomb = new ArrayList<>();
+        this.ABombP1 = new ArrayList<>();
+        this.ABombP2 = new ArrayList<>();
 
         // run main threading
         start();
@@ -236,11 +230,20 @@ public class Game extends Canvas implements Runnable {
 
         for (int i = 0; i < size; i++) {
 
-            if (element == ABomb) {
+            if (element == ABombP1) {
                 handler.addObject(
-                        new ET(
-                                ABomb.get(i).getElemX() * BOX_SIZE,
-                                ABomb.get(i).getElemY() * BOX_SIZE,
+                        new Bomb(
+                                ABombP1.get(i).getElemX() * BOX_SIZE,
+                                ABombP1.get(i).getElemY() * BOX_SIZE,
+                                ID.Bomb,
+                                handler));
+            }
+
+            else if(element == ABombP2){
+                handler.addObject(
+                        new Bomb(
+                                ABombP2.get(i).getElemX() * BOX_SIZE,
+                                ABombP2.get(i).getElemY() * BOX_SIZE,
                                 ID.Bomb,
                                 handler));
             }
@@ -274,28 +277,28 @@ public class Game extends Canvas implements Runnable {
     public void listenForMessage() {
         new Thread(new Runnable() {
             @Override
-                public void run() {
-                    String msgFromGroupChat;
+            public void run() {
+                String msgFromGroupChat;
 
-                    while (socket.isConnected()) {
-                        try {
+                while (socket.isConnected()) {
+                    try {
 
-                            // check object
-                            msgFromGroupChat = bufferedReader.readLine();
+                        // check object
+                        msgFromGroupChat = bufferedReader.readLine();
 
-                            if (msgFromGroupChat.contains("area")){
-                                commandArea(msgFromGroupChat);
-                            }
-
-                            else if (!msgFromGroupChat.contains(username)) {
-                                commandEnemy(msgFromGroupChat);
-                            }
-
-                        } catch (IOException e) {
-                            closeEverything(socket, bufferedReader, bufferedWriter);
+                        if (msgFromGroupChat.contains("areaPlayer1")) {
+                            commandArea(msgFromGroupChat);
                         }
+
+                        else if (!msgFromGroupChat.contains(username)) {
+                            commandEnemy(msgFromGroupChat);
+                        }
+
+                    } catch (IOException e) {
+                        closeEverything(socket, bufferedReader, bufferedWriter);
                     }
                 }
+            }
         }).start();
     }
 
@@ -314,6 +317,21 @@ public class Game extends Canvas implements Runnable {
 
             // create player
             sendMSG(username + "have entered server : " + player1.getPositionX() + " " + player1.getPositionY());
+
+            StringBuilder listX = new StringBuilder();
+            StringBuilder listY = new StringBuilder();
+
+            // send msg bomb position
+            for (int i = 0; i < ABombP1.size(); i++) {
+
+                listX.append(ABombP1.get(i).getElemX()).append(",");
+                listY.append(ABombP1.get(i).getElemY()).append(",");
+
+            }
+
+            sendMSG(username + " areaPlayer2 BombX : " + listX);
+            sendMSG(username + " areaPlayer2 BombY : " + listY);
+
         }
 
         // when enemy move
@@ -376,49 +394,86 @@ public class Game extends Canvas implements Runnable {
                     Integer.parseInt(positionBullet[1]),
                     ID.BulletEnemy,
                     handler,
-                    bufferedWriter ));
+                    bufferedWriter));
 
+        }
+
+        else if (msgFromGroupChat.contains("BombX") && msgFromGroupChat.contains("areaPlayer2")) {
+
+            int indexColon = msgFromGroupChat.indexOf(":");
+            indexColon += 2;
+
+            String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
+
+            String x[] = newMsgFromGroupChat.split(",");
+            this.bombXP2 = new int[x.length];
+
+            for (int i = 0; i < x.length; i++) {
+                this.bombXP2[i] = Integer.parseInt(x[i]);
+            }
+        }
+
+        else if (msgFromGroupChat.contains("BombY") && msgFromGroupChat.contains("areaPlayer2")) {
+
+            int indexColon = msgFromGroupChat.indexOf(":");
+            indexColon += 2;
+
+            String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
+
+            String x[] = newMsgFromGroupChat.split(",");
+            this.bombYP2 = new int[x.length + 1];
+
+            for (int i = 0; i < x.length; i++) {
+                bombYP2[i] = Integer.parseInt(x[i]);
+            }
+
+            // create Bomb
+            for (int i = 0; i < bombXP2.length; i++) {
+                ABombP2.add(new ElementPosition(bombXP2[i], bombYP2[i]));
+            }
+
+            // create Bomb in map
+            randElement(ABombP2, ID.Bomb, ABombP2.size());
         }
 
     }
 
     private void commandArea(String msgFromGroupChat) {
 
-        if (msgFromGroupChat.contains("BombX")){
+        if (msgFromGroupChat.contains("BombX")) {
             int indexColon = msgFromGroupChat.indexOf(":");
             indexColon += 1;
 
             String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
-            System.out.println(newMsgFromGroupChat);
 
             String x[] = newMsgFromGroupChat.split(",");
-            this.bombX = new int[x.length];
+            this.bombXP1 = new int[x.length];
 
-            for (int i = 0; i < x.length; i++){
-                this.bombX[i] = Integer.parseInt(x[i]);
+            for (int i = 0; i < x.length; i++) {
+                this.bombXP1[i] = Integer.parseInt(x[i]);
             }
         }
 
-        else if (msgFromGroupChat.contains("BombY")){
+        else if (msgFromGroupChat.contains("BombY")) {
             int indexColon = msgFromGroupChat.indexOf(":");
             indexColon += 1;
 
             String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon);
 
             String x[] = newMsgFromGroupChat.split(",");
-            this.bombY = new int[x.length + 1];
+            this.bombYP1 = new int[x.length + 1];
 
-            for (int i = 0; i < x.length; i++){
-                bombY[i] = Integer.parseInt(x[i]);
+            for (int i = 0; i < x.length; i++) {
+                bombYP1[i] = Integer.parseInt(x[i]);
             }
 
             // create Bomb
-            for (int i = 0; i < bombX.length; i++){
-                ABomb.add(new ElementPosition(bombX[i], bombY[i]));
+            for (int i = 0; i < bombXP1.length; i++) {
+                ABombP1.add(new ElementPosition(bombXP1[i], bombYP1[i]));
             }
 
             // create Bomb in map
-            randElement(ABomb, ID.Bomb, ABomb.size());
+            randElement(ABombP1, ID.Bomb, ABombP1.size());
 
         }
 
@@ -442,14 +497,11 @@ public class Game extends Canvas implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
+
         Socket socket = new Socket("localhost", 9999);
         Game client = new Game(socket);
         client.listenForMessage();
 
-
-
-
     }
-
 
 }

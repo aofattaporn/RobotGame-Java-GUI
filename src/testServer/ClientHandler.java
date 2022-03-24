@@ -61,13 +61,14 @@ public class ClientHandler implements Runnable {
                     ++Server.countClient;
 
                     if (Server.countClient == 1){
+
                         // send bomb to client 1
                         randElement(ABomb, 160);
                         System.out.println(listX);
                         System.out.println(listY);
                         System.out.println("client one create bomb");
-                        broadcastMessage("area BombX :" + String.valueOf(listX));
-                        broadcastMessage("area BombY :" + String.valueOf(listY));
+                        broadcastMessage("areaPlayer1 BombX :" + String.valueOf(listX));
+                        broadcastMessage("areaPlayer1 BombY :" + String.valueOf(listY));
 
                     }
                 }

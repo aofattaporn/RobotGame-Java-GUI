@@ -1,6 +1,6 @@
 package controller;
 
-import minaGame.Game;
+import mainGame.Game;
 import object.GameObject;
 import object.ID;
 

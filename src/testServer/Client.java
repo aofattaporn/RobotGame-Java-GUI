@@ -1,8 +1,7 @@
 package testServer;
 
-import minaGame.Game;
+import mainGame.Game;
 
-import javax.imageio.IIOException;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;

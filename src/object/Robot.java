@@ -1,8 +1,8 @@
 package object;
 
 import controller.BufferImagesLoader;
-import minaGame.Game;
-import minaGame.Handler;
+import mainGame.Game;
+import mainGame.Handler;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -28,10 +28,10 @@ public class Robot extends GameObject {
         this.bufferedWriter = bufferedWriter;
 
         // loader image
-        robotUP = loader.loadImage("/res/up.png");
-        rotbotDown = loader.loadImage("/res/down.png");
-        robotLeft = loader.loadImage("/res/left.png");
-        robotRight = loader.loadImage("/res/righ.png");
+        robotUP = loader.loadImage("/res/player1_up.png");
+        rotbotDown = loader.loadImage("/res/player1_down.png");
+        robotLeft = loader.loadImage("/res/player1_left.png");
+        robotRight = loader.loadImage("/res/player1_right.png");
 
         // default image
         image = rotbotDown;

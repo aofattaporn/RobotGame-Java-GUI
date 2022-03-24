@@ -1,6 +1,6 @@
 package object;
 
-import minaGame.Game;
+import mainGame.Game;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

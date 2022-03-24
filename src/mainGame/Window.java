@@ -1,4 +1,4 @@
-package minaGame;
+package mainGame;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package minaGame;
+package mainGame;
 
 public class CountClient {
 

@@ -1,6 +1,6 @@
 package object;
 
-import minaGame.Handler;
+import mainGame.Handler;
 
 import java.awt.*;
 import java.util.Random;

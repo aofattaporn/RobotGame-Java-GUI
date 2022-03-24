@@ -1,7 +1,7 @@
 package object;
 
-import minaGame.Game;
-import minaGame.Handler;
+import mainGame.Game;
+import mainGame.Handler;
 
 import java.awt.*;
 import java.io.BufferedWriter;
