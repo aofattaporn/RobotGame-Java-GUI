@@ -3,10 +3,7 @@ package net;
 import controller.BufferImagesLoader;
 import mainGame.Game;
 import mainGame.Handler;
-import object.Bullet;
-import object.Enemy;
-import object.ID;
-import object.Robot;
+import object.*;
 
 import java.io.BufferedWriter;
 import java.util.ArrayList;
@@ -66,6 +63,7 @@ public class TranslateMessage {
                 loader));
     }
 
+
     public void msgEnemyMove(String msgFromGroupChat){
         String position[] = subMessage(msgFromGroupChat, 1).split(" ");
 
@@ -88,24 +86,12 @@ public class TranslateMessage {
         }
     }
 
-    private String subMessage(String msgFromGroupChat, int indexCount) {
-
-        int indexColon = msgFromGroupChat.indexOf(":");
-        indexColon += indexCount;
-
-        return msgFromGroupChat.substring(indexColon);
-
-    }
-
     public void msgEnemyShoot(String msgFromGroupChat, BufferedWriter bufferedWriter) {
 
         String positionBullet[] = subMessage(msgFromGroupChat, 1).split(" ");
 
         handler.object.add(new Bullet(
-                Integer.parseInt(positionBullet[0]),
-                Integer.parseInt(positionBullet[1]),
-                ID.BulletEnemy,
-                handler));
+                Integer.parseInt(positionBullet[0]), Integer.parseInt(positionBullet[1]), ID.BulletEnemy, handler));
     }
 
     public ArrayList<Integer> msgCreateBombXP2(String msgFromGroupChat,ArrayList<Integer> bombP2) {
@@ -166,5 +152,15 @@ public class TranslateMessage {
 
 
     }
+
+    private String subMessage(String msgFromGroupChat, int indexCount) {
+
+        int indexColon = msgFromGroupChat.indexOf(":");
+        indexColon += indexCount;
+
+        return msgFromGroupChat.substring(indexColon);
+
+    }
+
 
 }

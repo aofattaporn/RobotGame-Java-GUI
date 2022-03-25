@@ -244,7 +244,8 @@ public class Game extends Canvas implements Runnable {
                                 ABombP1.get(i).getElemY() * BOX_SIZE,
                                 ID.Bomb,
                                 handler,
-                                ABombP1));
+                                ABombP1,
+                                bufferedWriter));
             } else if (element == ABombP2) {
                 handler.addObject(
                         new Bomb(
@@ -252,7 +253,8 @@ public class Game extends Canvas implements Runnable {
                                 ABombP2.get(i).getElemY() * BOX_SIZE,
                                 ID.Bomb,
                                 handler,
-                                ABombP1));
+                                ABombP1,
+                                bufferedWriter));
             }
         }
     }
@@ -357,6 +359,10 @@ public class Game extends Canvas implements Runnable {
 
                         else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("shoot")) {
                             translate.msgEnemyShoot(msgFromGroupChat, bufferedWriter);
+                        }
+
+                        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("remove bomb oj")){
+                            translate.msgRemove(msgFromGroupChat);
                         }
 
                         if (msgFromGroupChat.contains("areaPlayer2")) {

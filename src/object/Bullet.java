@@ -34,7 +34,7 @@ public class Bullet extends GameObject implements Runnable{
 
 
     @Override
-    public void tick() {
+    synchronized public void tick() {
 
         x += velY;
         y += velX;
@@ -47,6 +47,11 @@ public class Bullet extends GameObject implements Runnable{
                 if (tempObject.getId() == ID.Robot) {
                     Robot.hp -= 20;
                 }
+
+                else if (tempObject.getId() == ID.Bomb){
+                    handler.removeObject(this);
+                    handler.removeObject(tempObject);
+                }
             }
 
 
@@ -57,7 +62,9 @@ public class Bullet extends GameObject implements Runnable{
     @Override
     public void render(Graphics g) {
 
-        g.setColor(Color.ORANGE);
+        if (id.equals(ID.BulletEnemy)) g.setColor(Color.ORANGE);
+        else if (id.equals(ID.BulletRobot)) g.setColor(Color.GREEN);
+
         g.fillRect(x , y , 10, 10);
 
     }
