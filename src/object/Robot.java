@@ -27,18 +27,14 @@ public class Robot extends GameObject {
         this.username = username;
         this.bufferedWriter = bufferedWriter;
 
-        // loader image
-
-
         // default image
         image = rotbotDown;
         direct = "down";
 
-
     }
 
     @Override
-    public void tick() {
+    synchronized public void tick() {
         x += velX;
         y += velY;
 

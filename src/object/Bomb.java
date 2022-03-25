@@ -24,6 +24,16 @@ public class Bomb extends GameObject{
     @Override
     synchronized public void tick() {
 
+        for (int i = 0; i < handler.object.size(); i++) {
+
+            GameObject tempObject = handler.object.get(i);
+
+            if (getBounds().intersects(tempObject.getBounds())) {
+                if (tempObject.getId() == ID.Robot) {
+                    Robot.hp -= 5;
+                }
+            }
+        }
 
     }
 

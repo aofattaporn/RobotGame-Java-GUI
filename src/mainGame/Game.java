@@ -153,13 +153,6 @@ public class Game extends Canvas implements Runnable {
     public void tick() {
         for (int i = 0; i < handler.object.size(); i++) {
             camera.tick(handler.object.get(i));
-            GameObject tempObject = handler.object.get(i);
-
-            if (getBounds().intersects(tempObject.getBounds())) {
-                if (tempObject.getId() == ID.BulletRobot) {
-                    Robot.hp -= 50;
-                }
-            }
         }
         handler.tick();
     }
@@ -205,9 +198,12 @@ public class Game extends Canvas implements Runnable {
         // create HP
         g.setColor(Color.gray);
         g.fillRect(5, 5, 200, 32);
+
         if (Robot.hp < 40) g.setColor(Color.red);
         else g.setColor(Color.green);
+
         g.fillRect(5, 5, Robot.hp * 2, 32);
+
         g.setColor(Color.BLACK);
         g.drawRect(5, 5, 200, 32);
 
@@ -223,11 +219,9 @@ public class Game extends Canvas implements Runnable {
         g.setColor(Color.WHITE);
         for (int i = 0; i < handler.object.size(); i++) {
             if (handler.object.get(i).getId() == ID.Robot) {
-                g.drawString("X : " +
-                                String.valueOf((handler.object.get(i).getX() - 2) / 32) + ", Y :" +
-                                String.valueOf((handler.object.get(i).getY() - 2) / 32),
+                g.drawString("X : " + String.valueOf((handler.object.get(i).getX() - 2) / 32) +
+                                ", Y :" + String.valueOf((handler.object.get(i).getY() - 2) / 32),
                         625, 40);
-//                sendMSG(username + " move to : " + String.valueOf((handler.object.get(i).getX() - 2) / 32) + " " + String.valueOf((handler.object.get(i).getY() - 2) / 32));
             }
         }
 
@@ -330,6 +324,7 @@ public class Game extends Canvas implements Runnable {
                             translate.msgEnterNewClient(msgFromGroupChat, loader);
 
                             sendMSG(username + "have entered server : " + player1.getPositionX() + " " + player1.getPositionY());
+                            sendMSG(username + "HP HPlayer1: " + Robot.hp);
                             StringBuilder listX = new StringBuilder();
                             StringBuilder listY = new StringBuilder();
                             // send msg bomb position
@@ -341,6 +336,10 @@ public class Game extends Canvas implements Runnable {
                             sendMSG(username + " areaPlayer2 BombX : " + listX);
                             sendMSG(username + " areaPlayer2 BombY : " + listY);
 
+                        }
+
+                        else if (msgFromGroupChat.contains("HP HPlayer1")){
+                            translate.msgHPPlayer1(msgFromGroupChat);
                         }
 
                         else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("have entered server")) {
@@ -361,10 +360,6 @@ public class Game extends Canvas implements Runnable {
                             translate.msgEnemyShoot(msgFromGroupChat, bufferedWriter);
                         }
 
-                        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("remove bomb oj")){
-                            translate.msgRemove(msgFromGroupChat);
-                        }
-
                         if (msgFromGroupChat.contains("areaPlayer2")) {
                             if (msgFromGroupChat.contains("BombX")) {
                                 bombXP2 = translate.msgCreateBombXP2(msgFromGroupChat, bombXP2);
@@ -381,6 +376,8 @@ public class Game extends Canvas implements Runnable {
 
                             }
                         }
+
+
 
                     } catch (IOException e) {
                         closeEverything(socket, bufferedReader, bufferedWriter);
@@ -409,9 +406,11 @@ public class Game extends Canvas implements Runnable {
 
     public static void main(String[] args) throws IOException {
 
-        Socket socket = new Socket("localhost", 9999);
-        Game client = new Game(socket);
-        client.listenForMessage();
+//        MainWinddow mainWinddow = new MainWinddow("Robot Game", 800, 640);
+
+//        Socket socket = new Socket("localhost", 9999);
+//        Game client = new Game(socket);
+//        client.listenForMessage();
 
     }
 

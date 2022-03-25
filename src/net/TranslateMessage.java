@@ -76,6 +76,13 @@ public class TranslateMessage {
 
     }
 
+    public void msgHPPlayer1(String msgFromGroupChat){
+        String hpPlayer1 = subMessage(msgFromGroupChat, 2);
+
+        Enemy.hp = Integer.parseInt(hpPlayer1);
+
+    }
+
     public void msgEnemyDirect(String msgFromGroupChat){
         String newMsgFromGroupChat = subMessage(msgFromGroupChat, 1);
 

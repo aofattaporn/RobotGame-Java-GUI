@@ -48,13 +48,15 @@ public class Bullet extends GameObject implements Runnable{
                     Robot.hp -= 20;
                 }
 
+                else if (tempObject.getId() == ID.Enemy) {
+                    Enemy.hp -= 20;
+                }
+
                 else if (tempObject.getId() == ID.Bomb){
                     handler.removeObject(this);
                     handler.removeObject(tempObject);
                 }
             }
-
-
         }
 
     }

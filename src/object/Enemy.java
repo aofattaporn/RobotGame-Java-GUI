@@ -13,6 +13,7 @@ public class Enemy extends GameObject{
     private BufferImagesLoader loader;
     private Handler handler;
     private String enemyName;
+    public static int hp = 100;
 
     public Enemy(int x, int y, ID id, Handler handler,String enemyName, BufferImagesLoader loader) {
         super(x, y, id);
@@ -37,10 +38,25 @@ public class Enemy extends GameObject{
 
         else if (direct.equals("right")) image = robotRight;
 
+        // manage function Bomb
+        for (int i = 0; i < handler.object.size(); i++ ){
+            GameObject tempObject = handler.object.get(i);
+
+            if (getBounds().intersects(tempObject.getBounds())) {
+                if (tempObject.getId() == ID.Bomb) {
+
+                    Enemy.hp -= 5;
+                    handler.removeObject(tempObject);
+
+                }
+            }
+        }
+
     }
 
     @Override
     public void render(Graphics g) {
+        createHP(g);
 
         g.drawImage(image, x, y, 40, 40, null);
 
@@ -61,5 +77,21 @@ public class Enemy extends GameObject{
 
     public void setDirect(String direct) {
         this.direct = direct;
+    }
+
+    private void createHP(Graphics g){
+
+        // create enemy HP
+
+        g.setColor(Color.gray);
+        g.fillRect(x, y - 20, 40, 10);
+
+        // set color
+        if (Enemy.hp < 50) g.setColor(Color.red);
+        else g.setColor(Color.green);
+
+        g.fillRect(x, y - 20, (int) ( Enemy.hp * 0.5), 10);
+        g.setColor(Color.white);
+
     }
 }
