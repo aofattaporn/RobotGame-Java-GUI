@@ -33,6 +33,7 @@ public class Game extends Canvas implements Runnable {
 
     // dependency injection
     private boolean isRunning = false;
+    private Window window;
     private Thread mainThread;
     private Thread timerThread;
     private Handler handler;
@@ -46,12 +47,11 @@ public class Game extends Canvas implements Runnable {
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
 
-
     //  constructor method
     public Game(Socket socket) throws IOException {
 
         // create window
-        new Window(WIDTH, HEIGHT, "Robot Game", this);
+        this.window = new Window(WIDTH, HEIGHT, "Robot Game", this);
 
         // network connecting
         try {
@@ -84,8 +84,7 @@ public class Game extends Canvas implements Runnable {
         createTileMap();
 
         // add robot character -> send message
-        String username = JOptionPane.showInputDialog(this, "Please enter a name");
-        this.username = username;
+        this.username = JOptionPane.showInputDialog(this, "Please enter a name");
         player1 = new MyPosition(getRandomPlayer(2, 90), getRandomPlayer(2, 90));
         handler.addObject(new Robot(BOX_SIZE * player1.getPositionX(), BOX_SIZE * player1.getPositionY(), ID.Robot, handler, username, loader, bufferedWriter));
 
@@ -108,11 +107,12 @@ public class Game extends Canvas implements Runnable {
     public void stop() {
         isRunning = false;
 
-        try {
-            mainThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//            mainThread.join();
+//            timerThread.join();
+//            closeEverything(socket, bufferedReader, bufferedWriter);
+            window.closeWindow();
+
+
     }
 
     @Override
@@ -155,7 +155,9 @@ public class Game extends Canvas implements Runnable {
             camera.tick(handler.object.get(i));
         }
         handler.tick();
-    }
+
+
+     }
 
     public void render() {
         BufferStrategy bs = this.getBufferStrategy();
@@ -207,8 +209,19 @@ public class Game extends Canvas implements Runnable {
         g.setColor(Color.BLACK);
         g.drawRect(5, 5, 200, 32);
 
-        g.setColor(Color.white);
-        g.drawString("HP : " + String.valueOf(Robot.hp), 6, 52);
+//        g.setColor(Color.white);
+//        g.drawString("HP : " + String.valueOf(Robot.hp), 6, 52);
+
+        // check hp
+        if (Robot.hp <= 0){
+            Robot.hp = 0;
+
+            g.setColor(Color.white);
+            g.drawString("HP : " + String.valueOf(Robot.hp), 6, 52);
+
+            stop();
+            // create new window
+        }
 
         g.setColor(Color.white);
     }
@@ -402,16 +415,6 @@ public class Game extends Canvas implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-
-//        MainWinddow mainWinddow = new MainWinddow("Robot Game", 800, 640);
-
-//        Socket socket = new Socket("localhost", 9999);
-//        Game client = new Game(socket);
-//        client.listenForMessage();
-
     }
 
 }

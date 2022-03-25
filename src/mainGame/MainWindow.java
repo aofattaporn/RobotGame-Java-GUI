@@ -1,5 +1,6 @@
 package mainGame;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,38 +8,15 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.Socket;
 
-class Window {
+public class MainWindow {
 
     private JFrame frame;
-    private JFrame finalWindow;
-    private int width, height;
+    private Game client;
 
-    public Window(int width, int height, String name, Game game) {
+
+    public MainWindow(String name, int width, int height) {
 
         this.frame = new JFrame(name);
-        this.width = width;
-        this.height = height;
-
-        frame.setPreferredSize(new Dimension(width, height));
-        frame.setMinimumSize(new Dimension(width, height));
-        frame.setMinimumSize(new Dimension(width, height));
-
-        frame.add(game);
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-
-    }
-
-    public void closeWindow(){
-        createFinalWindow();
-    }
-
-    private void createFinalWindow(){
-        this.finalWindow = new JFrame();
-
-        this.frame = new JFrame("sd");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frame.getContentPane().setBackground(Color.BLACK);
@@ -63,14 +41,26 @@ class Window {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                Socket socket = null;
+                try {
+                    socket = new Socket("localhost", 9999);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    client = new Game(socket);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 
-                System.out.println("final");
+                client.listenForMessage();
 
                 frame.setVisible(false);
                 frame.dispose();
 
             }
         });
+
 
     }
 
@@ -86,6 +76,17 @@ class Window {
 
     }
 
+    private void ButtonEx() {
+
+        // button
+        JButton buttonEx = new JButton("Exit game");
+        buttonEx.setBounds(300, 500, 200, 50);
+        frame.add(buttonEx);
+        buttonEx.setVisible(true);
+
+    }
+
+    public static void main(String[] args) {
+        new MainWindow("Main window", 800, 650);
+    }
 }
-
-
