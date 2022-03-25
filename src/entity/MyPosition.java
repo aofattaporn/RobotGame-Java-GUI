@@ -25,4 +25,5 @@ public class MyPosition {
     public void setPositionY(int positionY) {
         this.positionY = positionY;
     }
+
 }

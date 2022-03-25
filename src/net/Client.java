@@ -1,4 +1,4 @@
-package testServer;
+package net;
 
 import mainGame.Game;
 

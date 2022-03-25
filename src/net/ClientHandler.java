@@ -1,14 +1,10 @@
-package testServer;
+package net;
 
 import entity.ElementPosition;
-import object.Bomb;
-import object.ET;
-import object.ID;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ClientHandler implements Runnable {
 
@@ -69,6 +65,7 @@ public class ClientHandler implements Runnable {
                         System.out.println("client one create bomb");
                         broadcastMessage("areaPlayer1 BombX :" + String.valueOf(listX));
                         broadcastMessage("areaPlayer1 BombY :" + String.valueOf(listY));
+                        broadcastMessage("Loading player 1 :");
 
                     }
                 }

@@ -1,16 +1,20 @@
 package object;
 
+import entity.ElementPosition;
 import mainGame.Handler;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Bomb extends GameObject{
 
     Handler handler;
+    ArrayList<ElementPosition> ABombP;
 
-    public Bomb(int x, int y, ID id, Handler handler) {
+    public Bomb(int x, int y, ID id, Handler handler, ArrayList<ElementPosition> ABombP) {
         super(x, y, id);
         this.handler = handler;
+        this.ABombP = ABombP;
     }
 
     @Override
@@ -20,9 +24,12 @@ public class Bomb extends GameObject{
             GameObject tempObject = handler.object.get(i);
 
             if (getBounds().intersects(tempObject.getBounds())) {
-                if (tempObject.getId() == ID.BulletRobot) {
+                if (tempObject.getId() == ID.BulletRobot || tempObject.getId() == ID.BulletEnemy) {
                     handler.removeObject(this);
                     handler.removeObject(tempObject);
+
+                    ABombP.removeIf(a -> a.getElemX() == getBounds().x && a.getElemY() == getBounds().y);
+                    System.out.println(ABombP.size());
                 }
             }
         }

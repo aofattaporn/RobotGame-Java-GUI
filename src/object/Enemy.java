@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 public class Enemy extends GameObject{
 
-    private BufferedImage robotUP, rotbotDown, robotLeft, robotRight, image;
+    public static BufferedImage robotUP, rotbotDown, robotLeft, robotRight, image;
     public static String direct;
     private BufferImagesLoader loader;
     private Handler handler;
@@ -19,10 +19,7 @@ public class Enemy extends GameObject{
         this.handler = handler;
 
         // loader image
-        robotUP = loader.loadImage("/res/player1_up.png");
-        rotbotDown = loader.loadImage("/res/player1_down.png");
-        robotLeft = loader.loadImage("/res/player1_left.png");
-        robotRight = loader.loadImage("/res/player1_right.png");
+
 
         // default image
         image = rotbotDown;

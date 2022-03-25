@@ -12,8 +12,8 @@ import java.io.IOException;
 public class Robot extends GameObject {
 
     private Handler handler;
-    private BufferedImage robotUP, rotbotDown, robotLeft, robotRight, image;
-    private String direct;
+    public static BufferedImage robotUP, rotbotDown, robotLeft, robotRight, image;
+    public static String direct;
     private boolean state = false;
     private BufferImagesLoader loader;
     private BufferedWriter bufferedWriter;
@@ -28,10 +28,7 @@ public class Robot extends GameObject {
         this.bufferedWriter = bufferedWriter;
 
         // loader image
-        robotUP = loader.loadImage("/res/player1_up.png");
-        rotbotDown = loader.loadImage("/res/player1_down.png");
-        robotLeft = loader.loadImage("/res/player1_left.png");
-        robotRight = loader.loadImage("/res/player1_right.png");
+
 
         // default image
         image = rotbotDown;
@@ -82,10 +79,9 @@ public class Robot extends GameObject {
 
         // event spaceBar
         if (handler.isSpaceBar()) {
-            // TODO : set bullet create object
             if (!state){
                 sendMSG(username + " "+ "shoot :" + x + " " + y);
-                handler.addObject(new BulletRobot(x, y, ID.BulletRobot,  username, this, handler, bufferedWriter ));
+                handler.addObject(new Bullet(x, y, ID.BulletRobot, handler));
                 state = true;
             }else {
                 state = false;
