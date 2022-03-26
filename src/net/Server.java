@@ -16,7 +16,8 @@ public class Server {
 
     public void startServer() {
 
-        System.out.println("Staring Serve ...");
+        System.out.println("Staring Server ...");
+        System.out.println("======================");
 
         try{
 
@@ -24,7 +25,7 @@ public class Server {
 
                 Socket socket = serverSocket.accept();
 
-                System.out.println("A new client has connected!");
+                System.out.print("A new client has connected! => ");
                 ClientHandler clientHandler = new ClientHandler(socket);
 
                 // add each client to server for multi client

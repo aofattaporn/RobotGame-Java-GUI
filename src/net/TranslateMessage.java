@@ -119,8 +119,6 @@ public class TranslateMessage {
 
         if (msgFromGroupChat.contains("Loading player 1")){
 
-            System.out.println("Loading pic player 1");
-
             Robot.robotUP = loader.loadImage("/res/player2_up.png");
             Robot.rotbotDown = loader.loadImage("/res/player2_down.png");
             Robot.robotLeft = loader.loadImage("/res/player2_left.png");
@@ -138,8 +136,6 @@ public class TranslateMessage {
         }
 
         else if (msgFromGroupChat.contains("Loading player 2") && !msgFromGroupChat.contains(username)){
-
-            System.out.println("Loading pic player 2");
 
             Robot.robotUP = loader.loadImage("/res/player1_up.png");
             Robot.rotbotDown = loader.loadImage("/res/player1_down.png");

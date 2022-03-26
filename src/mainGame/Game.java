@@ -117,6 +117,7 @@ public class Game extends Canvas implements Runnable {
         isRunning = false;
         closeEverything(socket, bufferedReader, bufferedWriter);
 
+        System.exit(0);
 
     }
 
@@ -327,78 +328,80 @@ public class Game extends Canvas implements Runnable {
 
                         // check object
                         msgFromGroupChat = bufferedReader.readLine();
+                        if (msgFromGroupChat != null) {
 
-                        if (msgFromGroupChat.contains("areaPlayer1")) {
+                            if (msgFromGroupChat.contains("areaPlayer1")) {
 
-                            // translate command create area
-                            if (msgFromGroupChat.contains("BombX")) {
-                                bombXP1 = translate.msgArea(msgFromGroupChat, bombXP1);
-                            } else if (msgFromGroupChat.contains("BombY")) {
-                                bombYP1 = translate.msgArea(msgFromGroupChat, bombYP1);
-                            }
-
-                            // check value in bombXP1 and bombYP1
-                            if (bombXP1.size() >= 160 && bombYP1.size() >= 160) {
-                                // create Bomb
-                                for (int i = 0; i < bombXP1.size(); i++) {
-                                    ABombP1.add(new ElementPosition(bombXP1.get(i), bombYP1.get(i)));
+                                // translate command create area
+                                if (msgFromGroupChat.contains("BombX")) {
+                                    bombXP1 = translate.msgArea(msgFromGroupChat, bombXP1);
+                                } else if (msgFromGroupChat.contains("BombY")) {
+                                    bombYP1 = translate.msgArea(msgFromGroupChat, bombYP1);
                                 }
 
-                                // create Bomb in map
-                                randElement(ABombP1, ID.Bomb, ABombP1.size());
-                            }
+                                // check value in bombXP1 and bombYP1
+                                if (bombXP1.size() >= 160 && bombYP1.size() >= 160) {
+                                    // create Bomb
+                                    for (int i = 0; i < bombXP1.size(); i++) {
+                                        ABombP1.add(new ElementPosition(bombXP1.get(i), bombYP1.get(i)));
+                                    }
 
-                        } else if (msgFromGroupChat.contains("Loading player")) {
-                            translate.msgCreateLoadPlayer(msgFromGroupChat, username, loader);
-                        } else if (msgFromGroupChat.contains("HP HPlayer1")) {
-                            translate.msgHPPlayer1(msgFromGroupChat);
-                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("enter server")) {
-
-                            // create player2 in server
-                            translate.msgEnterNewClient(msgFromGroupChat, loader);
-
-                            sendMSG(username + "have entered server : " + player1.getPositionX() + " " + player1.getPositionY());
-                            sendMSG(username + "HP HPlayer1: " + Robot.hp);
-                            StringBuilder listX = new StringBuilder();
-                            StringBuilder listY = new StringBuilder();
-                            // send msg bomb position
-                            for (int i = 0; i < ABombP1.size(); i++) {
-                                listX.append(ABombP1.get(i).getElemX()).append(",");
-                                listY.append(ABombP1.get(i).getElemY()).append(",");
-                            }
-                            sendMSG(username + "Loading player 2 :");
-                            sendMSG(username + " areaPlayer2 BombX : " + listX);
-                            sendMSG(username + " areaPlayer2 BombY : " + listY);
-
-                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("have entered server")) {
-                            // create player2 in server
-                            translate.msgEnterNewClient(msgFromGroupChat, loader);
-
-                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("move to")) {
-                            translate.msgEnemyMove(msgFromGroupChat);
-                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("direct")) {
-                            translate.msgEnemyDirect(msgFromGroupChat);
-                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("shoot")) {
-                            translate.msgEnemyShoot(msgFromGroupChat, bufferedWriter);
-                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("end game")) {
-                            translate.msgPlayerEnd(msgFromGroupChat);
-                        }
-
-
-                        if (msgFromGroupChat.contains("areaPlayer2")) {
-                            if (msgFromGroupChat.contains("BombX")) {
-                                bombXP2 = translate.msgCreateBombXP2(msgFromGroupChat, bombXP2);
-                            } else if (msgFromGroupChat.contains("BombY")) {
-                                bombYP2 = translate.msgCreateBombXP2(msgFromGroupChat, bombYP2);
-                            }
-
-                            if (bombXP2.size() != 0 && bombYP2.size() != 0) {
-                                // create Bomb
-                                for (int i = 0; i < bombXP2.size(); i++) {
-                                    ABombP2.add(new ElementPosition(bombXP2.get(i), bombYP2.get(i)));
+                                    // create Bomb in map
+                                    randElement(ABombP1, ID.Bomb, ABombP1.size());
                                 }
-                                randElement(ABombP2, ID.Bomb, ABombP2.size());
 
+                            } else if (msgFromGroupChat.contains("Loading player")) {
+                                translate.msgCreateLoadPlayer(msgFromGroupChat, username, loader);
+                            } else if (msgFromGroupChat.contains("HP HPlayer1")) {
+                                translate.msgHPPlayer1(msgFromGroupChat);
+                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("enter server")) {
+
+                                // create player2 in server
+                                translate.msgEnterNewClient(msgFromGroupChat, loader);
+
+                                sendMSG(username + "have entered server : " + player1.getPositionX() + " " + player1.getPositionY());
+                                sendMSG(username + "HP HPlayer1: " + Robot.hp);
+                                StringBuilder listX = new StringBuilder();
+                                StringBuilder listY = new StringBuilder();
+                                // send msg bomb position
+                                for (int i = 0; i < ABombP1.size(); i++) {
+                                    listX.append(ABombP1.get(i).getElemX()).append(",");
+                                    listY.append(ABombP1.get(i).getElemY()).append(",");
+                                }
+                                sendMSG(username + "Loading player 2 :");
+                                sendMSG(username + " areaPlayer2 BombX : " + listX);
+                                sendMSG(username + " areaPlayer2 BombY : " + listY);
+
+                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("have entered server")) {
+                                // create player2 in server
+                                translate.msgEnterNewClient(msgFromGroupChat, loader);
+
+                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("move to")) {
+                                translate.msgEnemyMove(msgFromGroupChat);
+                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("direct")) {
+                                translate.msgEnemyDirect(msgFromGroupChat);
+                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("shoot")) {
+                                translate.msgEnemyShoot(msgFromGroupChat, bufferedWriter);
+                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("end game")) {
+                                translate.msgPlayerEnd(msgFromGroupChat);
+                            }
+
+
+                            if (msgFromGroupChat.contains("areaPlayer2")) {
+                                if (msgFromGroupChat.contains("BombX")) {
+                                    bombXP2 = translate.msgCreateBombXP2(msgFromGroupChat, bombXP2);
+                                } else if (msgFromGroupChat.contains("BombY")) {
+                                    bombYP2 = translate.msgCreateBombXP2(msgFromGroupChat, bombYP2);
+                                }
+
+                                if (bombXP2.size() != 0 && bombYP2.size() != 0) {
+                                    // create Bomb
+                                    for (int i = 0; i < bombXP2.size(); i++) {
+                                        ABombP2.add(new ElementPosition(bombXP2.get(i), bombYP2.get(i)));
+                                    }
+                                    randElement(ABombP2, ID.Bomb, ABombP2.size());
+
+                                }
                             }
                         }
 

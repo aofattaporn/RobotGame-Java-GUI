@@ -52,22 +52,30 @@ public class ClientHandler implements Runnable {
             try {
                 messageFromClient = bufferedReader.readLine();
 
-                // check client enter server
-                if (messageFromClient.contains("enter server")){
-                    ++Server.countClient;
+                if (messageFromClient != null) {
+                    // check client enter server
+                    if (messageFromClient.contains("enter server")) {
 
-                    if (Server.countClient == 1){
+                        System.out.println("have " + clientHandlers.size() + " client in server");
+                        System.out.println("----------------------");
+                        if (clientHandlers.size() == 1) {
 
-                        // send bomb to client 1
-                        randElement(ABomb, 160);
-                        broadcastMessage("areaPlayer1 BombX :" + String.valueOf(listX));
-                        broadcastMessage("areaPlayer1 BombY :" + String.valueOf(listY));
-                        broadcastMessage("Loading player 1 :");
+                            // send bomb to client 1
+                            randElement(ABomb, 160);
+                            broadcastMessage("areaPlayer1 BombX :" + String.valueOf(listX));
+                            broadcastMessage("areaPlayer1 BombY :" + String.valueOf(listY));
+                            broadcastMessage("Loading player 1 :");
 
+                        }
+                    }else if (messageFromClient.contains("end game")){
+                        System.out.println(messageFromClient);
+                        removeClientHandler();
                     }
+
+                    broadcastMessage(messageFromClient);
                 }
 
-                broadcastMessage(messageFromClient);
+
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -97,8 +105,9 @@ public class ClientHandler implements Runnable {
 
     public void removeClientHandler() {
         clientHandlers.remove(this);
+        System.out.println("SERVER: " + " has some client left the server! ");
+        System.out.println("----------------------");
         broadcastMessage("SERVER: " + clientUsername + " has left the chat! ");
-
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {

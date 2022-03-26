@@ -18,7 +18,7 @@ public class Robot extends GameObject {
     private BufferImagesLoader loader;
     private BufferedWriter bufferedWriter;
     private String username;
-    public static int hp = 0;
+    public static int hp = 100;
 
     public Robot(int x, int y, ID id, Handler handler, String username, BufferImagesLoader loader, BufferedWriter bufferedWriter) {
         super(x, y, id);
