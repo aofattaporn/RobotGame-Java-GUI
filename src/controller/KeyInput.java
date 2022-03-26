@@ -1,5 +1,6 @@
 package controller;
 
+import mainGame.Game;
 import mainGame.Handler;
 import object.GameObject;
 import object.ID;
@@ -10,6 +11,7 @@ import java.awt.event.KeyEvent;
 public class KeyInput extends KeyAdapter {
 
     Handler handler;
+
 
     public KeyInput(Handler handler) {
         this.handler = handler;

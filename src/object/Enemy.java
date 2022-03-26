@@ -87,10 +87,10 @@ public class Enemy extends GameObject{
         g.fillRect(x, y - 20, 40, 10);
 
         // set color
-        if (Enemy.hp < 50) g.setColor(Color.red);
+        if (Enemy.hp < 40) g.setColor(Color.red);
         else g.setColor(Color.green);
 
-        g.fillRect(x, y - 20, (int) ( Enemy.hp * 0.5), 10);
+        g.fillRect(x, y - 20, (int) ( Enemy.hp * 0.4), 10);
         g.setColor(Color.white);
 
     }

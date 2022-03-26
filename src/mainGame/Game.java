@@ -1,9 +1,6 @@
 package mainGame;
 
-import controller.BufferImagesLoader;
-import controller.Camera;
-import controller.KeyInput;
-import controller.timer;
+import controller.*;
 import entity.ElementPosition;
 import entity.MyPosition;
 import net.TranslateMessage;
@@ -46,6 +43,7 @@ public class Game extends Canvas implements Runnable {
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
+
 
     //  constructor method
     public Game(Socket socket) throws IOException {
@@ -105,12 +103,19 @@ public class Game extends Canvas implements Runnable {
     }
 
     public void stop() {
-        isRunning = false;
 
-//            mainThread.join();
-//            timerThread.join();
-//            closeEverything(socket, bufferedReader, bufferedWriter);
-            window.closeWindow();
+        sendMSG(username + " end game ");
+        window.closeWindow();
+
+        try {
+            mainThread.join();
+            timerThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        isRunning = false;
+        closeEverything(socket, bufferedReader, bufferedWriter);
 
 
     }
@@ -147,7 +152,9 @@ public class Game extends Canvas implements Runnable {
                 // updates = 0;
             }
         }
+
         stop();
+
     }
 
     public void tick() {
@@ -157,7 +164,7 @@ public class Game extends Canvas implements Runnable {
         handler.tick();
 
 
-     }
+    }
 
     public void render() {
         BufferStrategy bs = this.getBufferStrategy();
@@ -188,6 +195,26 @@ public class Game extends Canvas implements Runnable {
         // create HP
         createHP(g);
 
+        if (Robot.hp <= 0) {
+            g.setColor(new Color(192, 192, 192, 90));
+            g.fillRect(0, 0, WIDTH, HEIGHT);
+
+            g.setColor(Color.orange);
+            g.setFont(new Font(Font.MONOSPACED, 10, 50));
+            g.drawString("You Lose", 270, 200);
+
+            g2d.fillRect(270, 300, 270, 50);
+            g.setColor(Color.white);
+            g.setFont(new Font(Font.MONOSPACED, 10, 30));
+            g.drawString("click to exit", 280, 335);
+
+            this.addMouseListener(new MouseInput(this));
+
+            Robot.handler = null;
+
+
+        }
+
 
         /////////////////////////////////
         g.dispose();
@@ -209,17 +236,16 @@ public class Game extends Canvas implements Runnable {
         g.setColor(Color.BLACK);
         g.drawRect(5, 5, 200, 32);
 
-//        g.setColor(Color.white);
-//        g.drawString("HP : " + String.valueOf(Robot.hp), 6, 52);
+        g.setColor(Color.white);
+        g.drawString("HP : " + String.valueOf(Robot.hp), 6, 52);
 
         // check hp
-        if (Robot.hp <= 0){
+        if (Robot.hp <= 0) {
             Robot.hp = 0;
 
             g.setColor(Color.white);
             g.drawString("HP : " + String.valueOf(Robot.hp), 6, 52);
 
-            stop();
             // create new window
         }
 
@@ -307,9 +333,7 @@ public class Game extends Canvas implements Runnable {
                             // translate command create area
                             if (msgFromGroupChat.contains("BombX")) {
                                 bombXP1 = translate.msgArea(msgFromGroupChat, bombXP1);
-                            }
-
-                            else if (msgFromGroupChat.contains("BombY")) {
+                            } else if (msgFromGroupChat.contains("BombY")) {
                                 bombYP1 = translate.msgArea(msgFromGroupChat, bombYP1);
                             }
 
@@ -324,14 +348,11 @@ public class Game extends Canvas implements Runnable {
                                 randElement(ABombP1, ID.Bomb, ABombP1.size());
                             }
 
-                        }
-
-                        else if (msgFromGroupChat.contains("Loading player")){
+                        } else if (msgFromGroupChat.contains("Loading player")) {
                             translate.msgCreateLoadPlayer(msgFromGroupChat, username, loader);
-                        }
-
-                        // new client enter server
-                        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("enter server")) {
+                        } else if (msgFromGroupChat.contains("HP HPlayer1")) {
+                            translate.msgHPPlayer1(msgFromGroupChat);
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("enter server")) {
 
                             // create player2 in server
                             translate.msgEnterNewClient(msgFromGroupChat, loader);
@@ -349,29 +370,20 @@ public class Game extends Canvas implements Runnable {
                             sendMSG(username + " areaPlayer2 BombX : " + listX);
                             sendMSG(username + " areaPlayer2 BombY : " + listY);
 
-                        }
-
-                        else if (msgFromGroupChat.contains("HP HPlayer1")){
-                            translate.msgHPPlayer1(msgFromGroupChat);
-                        }
-
-                        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("have entered server")) {
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("have entered server")) {
                             // create player2 in server
                             translate.msgEnterNewClient(msgFromGroupChat, loader);
 
-                        }
-
-                        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("move to")) {
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("move to")) {
                             translate.msgEnemyMove(msgFromGroupChat);
-                        }
-
-                        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("direct")) {
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("direct")) {
                             translate.msgEnemyDirect(msgFromGroupChat);
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("shoot")) {
+                            translate.msgEnemyShoot(msgFromGroupChat, bufferedWriter);
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("end game")) {
+                            translate.msgPlayerEnd(msgFromGroupChat);
                         }
 
-                        else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("shoot")) {
-                            translate.msgEnemyShoot(msgFromGroupChat, bufferedWriter);
-                        }
 
                         if (msgFromGroupChat.contains("areaPlayer2")) {
                             if (msgFromGroupChat.contains("BombX")) {
@@ -389,7 +401,6 @@ public class Game extends Canvas implements Runnable {
 
                             }
                         }
-
 
 
                     } catch (IOException e) {

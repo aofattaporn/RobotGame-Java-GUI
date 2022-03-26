@@ -11,14 +11,14 @@ import java.io.IOException;
 
 public class Robot extends GameObject {
 
-    private Handler handler;
+    public static Handler handler;
     public static BufferedImage robotUP, rotbotDown, robotLeft, robotRight, image;
     public static String direct;
     private boolean state = false;
     private BufferImagesLoader loader;
     private BufferedWriter bufferedWriter;
     private String username;
-    public static int hp = 100;
+    public static int hp = 0;
 
     public Robot(int x, int y, ID id, Handler handler, String username, BufferImagesLoader loader, BufferedWriter bufferedWriter) {
         super(x, y, id);
@@ -38,62 +38,66 @@ public class Robot extends GameObject {
         x += velX;
         y += velY;
 
-        // movement
-        if (handler.isUp() && y > Game.BOX_SIZE *2 ) {
-            if (image == robotUP) {
-                velY = -32;
+        if (handler != null) {
+
+            // movement
+            if (handler.isUp() && y > Game.BOX_SIZE * 2) {
+                if (image == robotUP) {
+                    velY = -32;
+                }
+                image = robotUP;
+                direct = "up";
+
+            } else if (!handler.isDown()) {
+                velY = 0;
             }
-            image = robotUP;
-            direct = "up";
 
-        } else if (!handler.isDown() ) {
-            velY = 0;
-        }
+            if (handler.isDown() && y < Game.BOX_SIZE * 81) {
+                if (image == rotbotDown) {
+                    velY = 32;
+                }
+                image = rotbotDown;
+                direct = "down";
 
-        if (handler.isDown() && y < Game.BOX_SIZE * 81) {
-            if (image == rotbotDown) {
-                velY = 32;
+            } else if (!handler.isUp()) velY = 0;
+
+            if (handler.isRight() && x < Game.BOX_SIZE * 101) {
+                if (image == robotRight) {
+                    velX = 32;
+                }
+                image = robotRight;
+                direct = "right";
+            } else if (!handler.isLeft()) velX = 0;
+
+            if (handler.isLeft() && x > Game.BOX_SIZE * 2) {
+                if (image == robotLeft) velX = -32;
+                image = robotLeft;
+                direct = "left";
+            } else if (!handler.isRight()) velX = 0;
+
+            // event spaceBar
+            if (handler.isSpaceBar()) {
+                if (!state) {
+                    sendMSG(username + " " + "shoot :" + x + " " + y);
+                    handler.addObject(new Bullet(x, y, ID.BulletRobot, handler));
+                    state = true;
+                } else {
+                    state = false;
+                }
             }
-            image = rotbotDown;
-            direct = "down";
 
-        } else if (!handler.isUp()) velY = 0;
 
-        if (handler.isRight() && x < Game.BOX_SIZE * 101) {
-            if (image == robotRight) {
-                velX = 32;
-            }
-            image = robotRight;
-            direct = "right";
-        } else if (!handler.isLeft()) velX = 0;
+            // manage function Bomb
+            for (int i = 0; i < handler.object.size(); i++) {
+                GameObject tempObject = handler.object.get(i);
 
-        if (handler.isLeft() && x > Game.BOX_SIZE * 2) {
-            if (image == robotLeft) velX = -32;
-            image = robotLeft;
-            direct = "left";
-        } else if (!handler.isRight()) velX = 0;
+                if (getBounds().intersects(tempObject.getBounds())) {
+                    if (tempObject.getId() == ID.Bomb) {
 
-        // event spaceBar
-        if (handler.isSpaceBar()) {
-            if (!state){
-                sendMSG(username + " "+ "shoot :" + x + " " + y);
-                handler.addObject(new Bullet(x, y, ID.BulletRobot, handler));
-                state = true;
-            }else {
-                state = false;
-            }
-        }
+                        Robot.hp -= 5;
+                        handler.removeObject(tempObject);
 
-        // manage function Bomb
-        for (int i = 0; i < handler.object.size(); i++ ){
-            GameObject tempObject = handler.object.get(i);
-
-            if (getBounds().intersects(tempObject.getBounds())) {
-                if (tempObject.getId() == ID.Bomb) {
-
-                    Robot.hp -= 5;
-                    handler.removeObject(tempObject);
-
+                    }
                 }
             }
         }
@@ -103,11 +107,13 @@ public class Robot extends GameObject {
     @Override
     public void render(Graphics g) {
 
-        sendMSG(username + " change direct :" + direct);
-        sendMSG(username + " move to :" + x + " " + y);
+        if (Robot.hp != 0) {
+            sendMSG(username + " change direct :" + direct);
+            sendMSG(username + " move to :" + x + " " + y);
+        }
         g.drawImage(image, x, y, 40, 40, null);
 
-        if (username != null){
+        if (username != null) {
             g.drawString(username, x + 10, y + 10);
         }
 

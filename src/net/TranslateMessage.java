@@ -170,4 +170,15 @@ public class TranslateMessage {
     }
 
 
+    public void msgPlayerEnd(String msgFromGroupChat) {
+
+        // destroy enemy
+        for (int i = 0; i < handler.object.size(); i++) {
+            if (handler.object.get(i).getId() == ID.Enemy) {
+                handler.removeObject(handler.object.get(i));
+            }
+        }
+
+
+    }
 }

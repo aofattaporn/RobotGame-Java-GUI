@@ -1,5 +1,7 @@
-package mainGame;
+package net;
 
+
+import mainGame.Game;
 
 import javax.swing.*;
 import java.awt.*;
