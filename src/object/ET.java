@@ -5,9 +5,9 @@ import mainGame.Handler;
 import java.awt.*;
 import java.util.Random;
 
-public class ET extends GameObject{
+public class ET extends GameObject {
 
-    private final int[] randomET  = {50, 65, 90, 95};
+    private final int[] randomET = {50, 65, 90, 95};
     private int random;
     private Handler handler;
     public static int destroy;
@@ -23,7 +23,7 @@ public class ET extends GameObject{
     @Override
     public void tick() {
 
-        for (int i = 0; i < handler.object.size(); i++ ){
+        for (int i = 0; i < handler.object.size(); i++) {
             GameObject tempObject = handler.object.get(i);
 
             if (getBounds().intersects(tempObject.getBounds())) {
@@ -31,15 +31,25 @@ public class ET extends GameObject{
                     handler.removeObject(tempObject);
                 }
 
-                if ((tempObject.getId() == ID.Robot)){
+                if ((tempObject.getId() == ID.Robot)) {
                     if (Robot.hp < 100) {
                         random -= 5;
                         Robot.hp += 5;
                     }
-                    if (random <= 0){
+                    if (random <= 0) {
                         handler.removeObject(this);
                         destroy++;
                     }
+                } else if (tempObject.getId() == ID.Enemy) {
+                    if (Robot.hp < 100) {
+                        random -= 5;
+                        Enemy.hp += 5;
+                    }
+                    if (random <= 0) {
+                        handler.removeObject(this);
+                        destroy++;
+                    }
+
                 }
             }
         }

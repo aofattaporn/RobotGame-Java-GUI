@@ -17,14 +17,17 @@ public class ClientHandler implements Runnable {
     private ArrayList<ElementPosition> ABomb;
     private ArrayList<ElementPosition> AET;
 
-    private StringBuilder listX;
-    private StringBuilder listY;
+    private StringBuilder listBombX, listBombY, listETX, listETY;
 
     public ClientHandler(Socket socket) {
         try {
 
-            this.listX = new StringBuilder();
-            this.listY = new StringBuilder();
+            this.listBombX = new StringBuilder();
+            this.listBombY = new StringBuilder();
+            this.listETX = new StringBuilder();
+            this.listETY = new StringBuilder();
+            this.AET = new ArrayList<>();
+            this.ABomb = new ArrayList<>();
 
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -61,20 +64,23 @@ public class ClientHandler implements Runnable {
                         if (clientHandlers.size() == 1) {
 
                             // send bomb to client 1
-                            randElement(ABomb, 160);
-                            broadcastMessage("areaPlayer1 BombX :" + String.valueOf(listX));
-                            broadcastMessage("areaPlayer1 BombY :" + String.valueOf(listY));
+                            randElement(160, 40);
+                            broadcastMessage(
+                                    "areaPlayer1 BombX :" + String.valueOf(listBombX)
+                                    + "ETX :" + String.valueOf(listETX));
+                            broadcastMessage(
+                                    "areaPlayer1 BombY :" + String.valueOf(listBombY)
+                                    + "ETY :" + String.valueOf(listETY));
                             broadcastMessage("Loading player 1 :");
 
                         }
-                    }else if (messageFromClient.contains("end game")){
+                    } else if (messageFromClient.contains("end game")) {
                         System.out.println(messageFromClient);
                         removeClientHandler();
                     }
 
                     broadcastMessage(messageFromClient);
                 }
-
 
 
             } catch (IOException e) {
@@ -127,20 +133,62 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public void randElement(ArrayList<ElementPosition> element, int size) {
+    public void randElement(int sizeBomb, int sizeET) {
 
         int randBombX = 0;
         int randBombY = 0;
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < sizeBomb; i++) {
 
-            randBombX = getRandomPlayer(2, 102);
-            randBombY = getRandomPlayer(2, 82);
+            randBombX = getRandomPlayer(2, 80);
+            randBombY = getRandomPlayer(2, 80);
 
-            this.listX.append(randBombX).append(",");
-            this.listY.append(randBombY).append(",");
+            this.listBombX.append(randBombX).append(",");
+            this.listBombY.append(randBombY).append(",");
 
         }
+
+        randBombX = 0;
+        randBombY = 0;
+
+        for (int i = 0; i < sizeET; i++) {
+
+            randBombX = getRandomPlayer(2, 80);
+            randBombY = getRandomPlayer(2, 80);
+
+            this.listETX.append(randBombX).append(",");
+            this.listETY.append(randBombY).append(",");
+
+        }
+
+        System.out.println("listBombX : " + this.listBombX);
+        System.out.println("listBombY : " + this.listBombY);
+        System.out.println("listETX : " + this.listETX);
+        System.out.println("listETY : " + this.listETY);
+
+    }
+
+    public void randElement2(ArrayList<ElementPosition> element, int size) {
+
+        int randETX = 0;
+        int randETY = 0;
+
+        if (element.equals(AET)) {
+
+            for (int i = 0; i < size; i++) {
+
+                System.out.println(" เเข้า ในนี้ เถอเะไอสัส ");
+
+                randETX = getRandomPlayer(2, 102);
+                randETY = getRandomPlayer(2, 82);
+
+                this.listETX.append(randETX).append(",");
+                this.listETY.append(randETY).append(",");
+
+            }
+        }
+
+
     }
 
     private int getRandomPlayer(int min, int max) {

@@ -22,11 +22,11 @@ public class Game extends Canvas implements Runnable {
     private final int HEIGHT = 640;
     public static int BOX_SIZE = 32;
     public MyPosition player1;
-    public ArrayList<ElementPosition> ABombP1, ABombP2;
-    private ArrayList<Integer> bombXP1, bombYP1;
-    private ArrayList<Integer> bombXP2, bombYP2;
+    public static ArrayList<ElementPosition> ABombP1, ABombP2;
+    public static ArrayList<Integer> bombXP1, bombYP1, ETXP1, ETYP1;
+    public static ArrayList<Integer> bombXP2, bombYP2, ETXP2, ETYP2;
     public ArrayList<ElementPosition> AETP1, AETP2;
-    public String username;
+    public static String username;
 
     // dependency injection
     private boolean isRunning = false;
@@ -66,10 +66,17 @@ public class Game extends Canvas implements Runnable {
         camera = new Camera(this);
         this.ABombP1 = new ArrayList<>();
         this.ABombP2 = new ArrayList<>();
+        this.AETP1 = new ArrayList<>();
+        this.AETP2 = new ArrayList<>();
+
         this.bombXP2 = new ArrayList<>();
         this.bombYP2 = new ArrayList<>();
         this.bombXP1 = new ArrayList<>();
         this.bombYP1 = new ArrayList<>();
+        this.ETXP1 = new ArrayList<>();
+        this.ETYP1 = new ArrayList<>();
+        this.ETXP2 = new ArrayList<>();
+        this.ETYP2 = new ArrayList<>();
 
 
         // run main threading
@@ -84,7 +91,15 @@ public class Game extends Canvas implements Runnable {
         // add robot character -> send message
         this.username = JOptionPane.showInputDialog(this, "Please enter a name");
         player1 = new MyPosition(getRandomPlayer(2, 90), getRandomPlayer(2, 90));
-        handler.addObject(new Robot(BOX_SIZE * player1.getPositionX(), BOX_SIZE * player1.getPositionY(), ID.Robot, handler, username, loader, bufferedWriter));
+        System.out.println(username
+                + "entered server !!! => in position  X : "
+                + player1.getPositionX()
+                + " Y : " + player1.getPositionY());
+        handler.addObject(
+                new Robot(BOX_SIZE * player1.getPositionX(),
+                        BOX_SIZE * player1.getPositionY(),
+                        ID.Robot, handler, username, loader,
+                        bufferedWriter));
 
         translate = new TranslateMessage(handler);
         sendMSG(username + " enter server : " + player1.getPositionX() + " " + player1.getPositionY());
@@ -163,8 +178,6 @@ public class Game extends Canvas implements Runnable {
             camera.tick(handler.object.get(i));
         }
         handler.tick();
-
-
     }
 
     public void render() {
@@ -213,7 +226,6 @@ public class Game extends Canvas implements Runnable {
 
             Robot.handler = null;
 
-
         }
 
 
@@ -246,8 +258,6 @@ public class Game extends Canvas implements Runnable {
 
             g.setColor(Color.white);
             g.drawString("HP : " + String.valueOf(Robot.hp), 6, 52);
-
-            // create new window
         }
 
         g.setColor(Color.white);
@@ -267,7 +277,7 @@ public class Game extends Canvas implements Runnable {
 
     }
 
-    public void randElement(ArrayList<ElementPosition> element, ID id, int size) {
+    synchronized public void randElement(ArrayList<ElementPosition> element, ID id, int size) {
 
         for (int i = 0; i < size; i++) {
 
@@ -289,7 +299,24 @@ public class Game extends Canvas implements Runnable {
                                 handler,
                                 ABombP1,
                                 bufferedWriter));
+            } else if (element == AETP1) {
+
+                handler.addObject(
+                        new ET(
+                                AETP1.get(i).getElemX() * BOX_SIZE,
+                                AETP1.get(i).getElemY() * BOX_SIZE,
+                                ID.ET,
+                                handler));
+            } else if (element == AETP2) {
+
+                handler.addObject(
+                        new ET(
+                                AETP2.get(i).getElemX() * BOX_SIZE,
+                                AETP2.get(i).getElemY() * BOX_SIZE,
+                                ID.ET,
+                                handler));
             }
+
         }
     }
 
@@ -325,83 +352,113 @@ public class Game extends Canvas implements Runnable {
 
                 while (socket.isConnected()) {
                     try {
-
                         // check object
                         msgFromGroupChat = bufferedReader.readLine();
-                        if (msgFromGroupChat != null) {
 
-                            if (msgFromGroupChat.contains("areaPlayer1")) {
-
-                                // translate command create area
-                                if (msgFromGroupChat.contains("BombX")) {
-                                    bombXP1 = translate.msgArea(msgFromGroupChat, bombXP1);
-                                } else if (msgFromGroupChat.contains("BombY")) {
-                                    bombYP1 = translate.msgArea(msgFromGroupChat, bombYP1);
-                                }
-
-                                // check value in bombXP1 and bombYP1
-                                if (bombXP1.size() >= 160 && bombYP1.size() >= 160) {
-                                    // create Bomb
-                                    for (int i = 0; i < bombXP1.size(); i++) {
-                                        ABombP1.add(new ElementPosition(bombXP1.get(i), bombYP1.get(i)));
-                                    }
-
-                                    // create Bomb in map
-                                    randElement(ABombP1, ID.Bomb, ABombP1.size());
-                                }
-
-                            } else if (msgFromGroupChat.contains("Loading player")) {
-                                translate.msgCreateLoadPlayer(msgFromGroupChat, username, loader);
-                            } else if (msgFromGroupChat.contains("HP HPlayer1")) {
-                                translate.msgHPPlayer1(msgFromGroupChat);
-                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("enter server")) {
-
-                                // create player2 in server
-                                translate.msgEnterNewClient(msgFromGroupChat, loader);
-
-                                sendMSG(username + "have entered server : " + player1.getPositionX() + " " + player1.getPositionY());
-                                sendMSG(username + "HP HPlayer1: " + Robot.hp);
-                                StringBuilder listX = new StringBuilder();
-                                StringBuilder listY = new StringBuilder();
-                                // send msg bomb position
-                                for (int i = 0; i < ABombP1.size(); i++) {
-                                    listX.append(ABombP1.get(i).getElemX()).append(",");
-                                    listY.append(ABombP1.get(i).getElemY()).append(",");
-                                }
-                                sendMSG(username + "Loading player 2 :");
-                                sendMSG(username + " areaPlayer2 BombX : " + listX);
-                                sendMSG(username + " areaPlayer2 BombY : " + listY);
-
-                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("have entered server")) {
-                                // create player2 in server
-                                translate.msgEnterNewClient(msgFromGroupChat, loader);
-
-                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("move to")) {
-                                translate.msgEnemyMove(msgFromGroupChat);
-                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("direct")) {
-                                translate.msgEnemyDirect(msgFromGroupChat);
-                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("shoot")) {
-                                translate.msgEnemyShoot(msgFromGroupChat, bufferedWriter);
-                            } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("end game")) {
-                                translate.msgPlayerEnd(msgFromGroupChat);
+                        if (msgFromGroupChat.contains("areaPlayer1")) {
+                            // translate command create area
+                            if (msgFromGroupChat.contains("BombX")) {
+                                bombXP1 = translate.msgAreaBomb(msgFromGroupChat, bombXP1);
+                                ETXP1 = translate.msgAreaET(msgFromGroupChat, Game.ETXP1);
                             }
 
+                            else if (msgFromGroupChat.contains("BombY")) {
+                                bombYP1 = translate.msgAreaBomb(msgFromGroupChat, bombYP1);
+                                ETYP1 = translate.msgAreaET(msgFromGroupChat, ETYP1);
+                            }
 
-                            if (msgFromGroupChat.contains("areaPlayer2")) {
-                                if (msgFromGroupChat.contains("BombX")) {
-                                    bombXP2 = translate.msgCreateBombXP2(msgFromGroupChat, bombXP2);
-                                } else if (msgFromGroupChat.contains("BombY")) {
-                                    bombYP2 = translate.msgCreateBombXP2(msgFromGroupChat, bombYP2);
+                            // check value in bombXP1 and bombYP1
+                            if (bombXP1.size() == 160 && bombYP1.size() == 160) {
+                                // create Bomb
+                                for (int i = 0; i < bombXP1.size(); i++) {
+                                    ABombP1.add(new ElementPosition(bombXP1.get(i), bombYP1.get(i)));
                                 }
+                                // create Bomb in map
+                                randElement(ABombP1, ID.Bomb, ABombP1.size());
+                            }
 
-                                if (bombXP2.size() != 0 && bombYP2.size() != 0) {
-                                    // create Bomb
-                                    for (int i = 0; i < bombXP2.size(); i++) {
-                                        ABombP2.add(new ElementPosition(bombXP2.get(i), bombYP2.get(i)));
-                                    }
-                                    randElement(ABombP2, ID.Bomb, ABombP2.size());
-
+                            if (ETXP1.size() == 40 && ETYP1.size() == 40) {
+                                // create ET
+                                for (int i = 0; i < ETXP1.size(); i++) {
+                                    AETP1.add(new ElementPosition(ETXP1.get(i), ETYP1.get(i)));
                                 }
+                                // create ET in map
+                                randElement(AETP1, ID.ET, AETP1.size());
+                            }
+                        }
+
+                        else if (msgFromGroupChat.contains("Loading player")) {
+                            translate.msgCreateLoadPlayer(msgFromGroupChat, username, loader);
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("HP HPlayer1")) {
+                            translate.msgHPPlayer1(msgFromGroupChat);
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("enter server")) {
+                            // create player2 in server
+                            translate.msgEnterNewClient(msgFromGroupChat, loader);
+
+                            StringBuilder listX = new StringBuilder();
+                            StringBuilder listY = new StringBuilder();
+                            StringBuilder listXET = new StringBuilder();
+                            StringBuilder listYET = new StringBuilder();
+
+                            // send msg bomb position
+                            for (int i = 0; i < ABombP1.size(); i++) {
+                                listX.append(ABombP1.get(i).getElemX()).append(",");
+                                listY.append(ABombP1.get(i).getElemY()).append(",");
+                            }
+
+                            for (int i = 0; i < AETP1.size(); i++) {
+                                listXET.append(AETP1.get(i).getElemX()).append(",");
+                                listYET.append(AETP1.get(i).getElemY()).append(",");
+                            }
+
+                            sendMSG(username + "have entered server : " + player1.getPositionX() + " " + player1.getPositionY());
+                            sendMSG(username + "HP HPlayer1: " + Robot.hp);
+                            sendMSG(username + " Loading player 2 :");
+                            sendMSG(username + " areaPlayer2 BombX : " + listX + "areaPlayer2 BombY : " + listY);
+                            sendMSG(username + " areaPlayer2 ETX : " + listXET + "areaPlayer2 ETY : " + listYET);
+
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("have entered server")) {
+                            translate.msgEnterNewClient(msgFromGroupChat, loader);
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("move to")) {
+                            translate.msgEnemyMove(msgFromGroupChat);
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("direct")) {
+                            translate.msgEnemyDirect(msgFromGroupChat);
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("shoot")) {
+                            translate.msgEnemyShoot(msgFromGroupChat, bufferedWriter);
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("end game")) {
+                            translate.msgPlayerEnd(msgFromGroupChat);
+                        } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("decrease HP")) {
+                            translate.msgDecreaseHP(msgFromGroupChat);
+                        }
+
+                        if (msgFromGroupChat.contains("areaPlayer2") && msgFromGroupChat.contains("BombX") &&
+                                !msgFromGroupChat.contains(username)
+                        ) {
+
+                            bombXP2 = translate.msgCreateBombXP2(msgFromGroupChat, bombXP2);
+                            bombYP2 = translate.msgCreateBombYP2(msgFromGroupChat, bombYP2);
+
+
+                            // create bomb and ET
+                            if (bombXP2.size() == 160 && bombYP2.size() == 160) {
+                                // create Bomb
+                                for (int i = 0; i < bombXP2.size(); i++) {
+                                    ABombP2.add(new ElementPosition(bombXP2.get(i), bombYP2.get(i)));
+                                }
+                                randElement(ABombP2, ID.Bomb, ABombP2.size());
+                            }
+                        }
+
+                        if (msgFromGroupChat.contains("areaPlayer2") && msgFromGroupChat.contains("ET")  &&
+                                !msgFromGroupChat.contains(username)) {
+                            ETXP2 = translate.msgCreateETXP2(msgFromGroupChat, ETXP2);
+                            ETYP2 = translate.msgCreateETYP2(msgFromGroupChat, ETYP2);
+
+                            if (ETXP2.size() == 40 && ETYP2.size() == 40) {
+                                for (int i = 0; i < ETXP2.size(); i++) {
+                                    AETP2.add(new ElementPosition(ETXP2.get(i), ETYP2.get(i)));
+                                }
+                                randElement(AETP2, ID.ET, AETP2.size());
                             }
                         }
 

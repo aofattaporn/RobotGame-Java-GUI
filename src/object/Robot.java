@@ -97,6 +97,21 @@ public class Robot extends GameObject {
                         Robot.hp -= 5;
                         handler.removeObject(tempObject);
 
+                        // remove in array ABomb
+                        int x = tempObject.getX();
+                        int y = tempObject.getY();
+
+                        for (int j = 0; j < Game.ABombP1.size(); j++){
+
+                            if (
+                                    x == (Game.ABombP1.get(j).getElemX() * Game.BOX_SIZE)
+                                    && y  == (Game.ABombP1.get(j).getElemY() * Game.BOX_SIZE)
+                            )
+                            {
+                                Game.ABombP1.remove(j);
+
+                            }
+                        }
                     }
                 }
             }

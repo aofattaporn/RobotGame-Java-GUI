@@ -1,6 +1,7 @@
 package object;
 
 import entity.ElementPosition;
+import mainGame.Game;
 import mainGame.Handler;
 
 import java.awt.*;
@@ -31,6 +32,8 @@ public class Bomb extends GameObject{
             if (getBounds().intersects(tempObject.getBounds())) {
                 if (tempObject.getId() == ID.Robot) {
                     Robot.hp -= 5;
+
+                    sendMSG(Game.username + " decrease HP :" + Robot.hp);
                 }
             }
         }
