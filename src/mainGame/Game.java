@@ -20,11 +20,11 @@ public class Game extends Canvas implements Runnable {
     // variable
     private final int WIDTH = 800;
     private final int HEIGHT = 640;
-    public static int BOX_SIZE = 32;
+    public static final int BOX_SIZE = 32;
     public MyPosition player1;
     public static ArrayList<ElementPosition> ABombP1, ABombP2;
-    public static ArrayList<Integer> bombXP1, bombYP1, ETXP1, ETYP1;
-    public static ArrayList<Integer> bombXP2, bombYP2, ETXP2, ETYP2;
+    public static ArrayList<Integer> bombXP1, bombYP1, ETXP1, ETYP1, randETP1;
+    public static ArrayList<Integer> bombXP2, bombYP2, ETXP2, ETYP2, randETP2;
     public ArrayList<ElementPosition> AETP1, AETP2;
     public static String username;
 
@@ -62,22 +62,23 @@ public class Game extends Canvas implements Runnable {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
 
-        handler = new Handler();
-        camera = new Camera(this);
-        this.ABombP1 = new ArrayList<>();
-        this.ABombP2 = new ArrayList<>();
-        this.AETP1 = new ArrayList<>();
-        this.AETP2 = new ArrayList<>();
+        this.handler = new Handler();
+        this.camera = new Camera(this);
+        ABombP1 = new ArrayList<>();
+        ABombP2 = new ArrayList<>();
+        AETP1 = new ArrayList<>();
+        AETP2 = new ArrayList<>();
 
-        this.bombXP2 = new ArrayList<>();
-        this.bombYP2 = new ArrayList<>();
-        this.bombXP1 = new ArrayList<>();
-        this.bombYP1 = new ArrayList<>();
-        this.ETXP1 = new ArrayList<>();
-        this.ETYP1 = new ArrayList<>();
-        this.ETXP2 = new ArrayList<>();
-        this.ETYP2 = new ArrayList<>();
-
+        bombXP2 = new ArrayList<>();
+        bombYP2 = new ArrayList<>();
+        bombXP1 = new ArrayList<>();
+        bombYP1 = new ArrayList<>();
+        ETXP1 = new ArrayList<>();
+        ETYP1 = new ArrayList<>();
+        ETXP2 = new ArrayList<>();
+        ETYP2 = new ArrayList<>();
+        randETP1 = new ArrayList<>();
+        randETP2 = new ArrayList<>();
 
         // run main threading
         start();
@@ -89,7 +90,7 @@ public class Game extends Canvas implements Runnable {
         createTileMap();
 
         // add robot character -> send message
-        this.username = JOptionPane.showInputDialog(this, "Please enter a name");
+        username = JOptionPane.showInputDialog(this, "Please enter a name");
         player1 = new MyPosition(getRandomPlayer(2, 90), getRandomPlayer(2, 90));
         System.out.println(username
                 + "entered server !!! => in position  X : "
@@ -214,12 +215,12 @@ public class Game extends Canvas implements Runnable {
             g.fillRect(0, 0, WIDTH, HEIGHT);
 
             g.setColor(Color.orange);
-            g.setFont(new Font(Font.MONOSPACED, 10, 50));
+            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 50));
             g.drawString("You Lose", 270, 200);
 
             g2d.fillRect(270, 300, 270, 50);
             g.setColor(Color.white);
-            g.setFont(new Font(Font.MONOSPACED, 10, 30));
+            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
             g.drawString("click to exit", 280, 335);
 
             this.addMouseListener(new MouseInput(this));
@@ -250,14 +251,14 @@ public class Game extends Canvas implements Runnable {
         g.drawRect(5, 5, 200, 32);
 
         g.setColor(Color.white);
-        g.drawString("HP : " + String.valueOf(Robot.hp), 6, 52);
+        g.drawString("HP : " + Robot.hp, 6, 52);
 
         // check hp
         if (Robot.hp <= 0) {
             Robot.hp = 0;
 
             g.setColor(Color.white);
-            g.drawString("HP : " + String.valueOf(Robot.hp), 6, 52);
+            g.drawString("HP : " + Robot.hp, 6, 52);
         }
 
         g.setColor(Color.white);
@@ -269,8 +270,8 @@ public class Game extends Canvas implements Runnable {
         g.setColor(Color.WHITE);
         for (int i = 0; i < handler.object.size(); i++) {
             if (handler.object.get(i).getId() == ID.Robot) {
-                g.drawString("X : " + String.valueOf((handler.object.get(i).getX() - 2) / 32) +
-                                ", Y :" + String.valueOf((handler.object.get(i).getY() - 2) / 32),
+                g.drawString("X : " + (handler.object.get(i).getX() - 2) / 32 +
+                                ", Y :" + (handler.object.get(i).getY() - 2) / 32,
                         625, 40);
             }
         }
@@ -290,7 +291,9 @@ public class Game extends Canvas implements Runnable {
                                 handler,
                                 ABombP1,
                                 bufferedWriter));
-            } else if (element == ABombP2) {
+            }
+
+            else if (element == ABombP2) {
                 handler.addObject(
                         new Bomb(
                                 ABombP2.get(i).getElemX() * BOX_SIZE,
@@ -299,14 +302,25 @@ public class Game extends Canvas implements Runnable {
                                 handler,
                                 ABombP1,
                                 bufferedWriter));
-            } else if (element == AETP1) {
+            }
 
-                handler.addObject(
-                        new ET(
-                                AETP1.get(i).getElemX() * BOX_SIZE,
-                                AETP1.get(i).getElemY() * BOX_SIZE,
-                                ID.ET,
-                                handler));
+
+            else if (element == AETP1) {
+
+                if (AETP1.get(i) != null) {
+                    ET et = new ET(
+                            AETP1.get(i).getElemX() * BOX_SIZE,
+                            AETP1.get(i).getElemY() * BOX_SIZE,
+                            ID.ET,
+                            handler);
+
+
+                    handler.addObject(et);
+
+                    // get random
+                    randETP1.add(et.getRandom());
+                }
+
             } else if (element == AETP2) {
 
                 handler.addObject(
@@ -319,6 +333,25 @@ public class Game extends Canvas implements Runnable {
 
         }
     }
+
+    synchronized public void randElement(ArrayList<ElementPosition> element, ID id, int size, ArrayList<Integer> rand)
+    {
+
+        for (int i = 0; i < size; i++) {
+
+           if (element == AETP2) {
+
+                handler.addObject(
+                        new ET(
+                                AETP2.get(i).getElemX() * BOX_SIZE,
+                                AETP2.get(i).getElemY() * BOX_SIZE,
+                                ID.ET,
+                                handler, rand.get(i)));
+            }
+        }
+    }
+
+
 
     private void createTileMap() {
         handler.addObject(new BlockTile(2, 2, tile, ID.Block));
@@ -359,7 +392,7 @@ public class Game extends Canvas implements Runnable {
                             // translate command create area
                             if (msgFromGroupChat.contains("BombX")) {
                                 bombXP1 = translate.msgAreaBomb(msgFromGroupChat, bombXP1);
-                                ETXP1 = translate.msgAreaET(msgFromGroupChat, Game.ETXP1);
+                                ETXP1 = translate.msgAreaET(msgFromGroupChat, ETXP1);
                             }
 
                             else if (msgFromGroupChat.contains("BombY")) {
@@ -384,6 +417,8 @@ public class Game extends Canvas implements Runnable {
                                 }
                                 // create ET in map
                                 randElement(AETP1, ID.ET, AETP1.size());
+
+                                // get
                             }
                         }
 
@@ -399,23 +434,28 @@ public class Game extends Canvas implements Runnable {
                             StringBuilder listY = new StringBuilder();
                             StringBuilder listXET = new StringBuilder();
                             StringBuilder listYET = new StringBuilder();
+                            StringBuilder listRand = new StringBuilder();
 
                             // send msg bomb position
-                            for (int i = 0; i < ABombP1.size(); i++) {
-                                listX.append(ABombP1.get(i).getElemX()).append(",");
-                                listY.append(ABombP1.get(i).getElemY()).append(",");
+                            for (ElementPosition position : ABombP1) {
+                                listX.append(position.getElemX()).append(",");
+                                listY.append(position.getElemY()).append(",");
                             }
 
-                            for (int i = 0; i < AETP1.size(); i++) {
-                                listXET.append(AETP1.get(i).getElemX()).append(",");
-                                listYET.append(AETP1.get(i).getElemY()).append(",");
+                            for (ElementPosition elementPosition : AETP1) {
+                                listXET.append(elementPosition.getElemX()).append(",");
+                                listYET.append(elementPosition.getElemY()).append(",");
+                            }
+
+                            for (Integer integer : randETP1) {
+                                listRand.append(integer).append(",");
                             }
 
                             sendMSG(username + "have entered server : " + player1.getPositionX() + " " + player1.getPositionY());
                             sendMSG(username + "HP HPlayer1: " + Robot.hp);
                             sendMSG(username + " Loading player 2 :");
-                            sendMSG(username + " areaPlayer2 BombX : " + listX + "areaPlayer2 BombY : " + listY);
-                            sendMSG(username + " areaPlayer2 ETX : " + listXET + "areaPlayer2 ETY : " + listYET);
+                            sendMSG(username + " areaPlayer2 BombX : " + listX + "areaPlayer2 BombY : " + listY );
+                            sendMSG(username + " areaPlayer2 ETX : " + listXET + "areaPlayer2 ETY : " + listYET + "randET :" + listRand);
 
                         } else if (!msgFromGroupChat.contains(username) && msgFromGroupChat.contains("have entered server")) {
                             translate.msgEnterNewClient(msgFromGroupChat, loader);
@@ -438,7 +478,6 @@ public class Game extends Canvas implements Runnable {
                             bombXP2 = translate.msgCreateBombXP2(msgFromGroupChat, bombXP2);
                             bombYP2 = translate.msgCreateBombYP2(msgFromGroupChat, bombYP2);
 
-
                             // create bomb and ET
                             if (bombXP2.size() == 160 && bombYP2.size() == 160) {
                                 // create Bomb
@@ -451,14 +490,18 @@ public class Game extends Canvas implements Runnable {
 
                         if (msgFromGroupChat.contains("areaPlayer2") && msgFromGroupChat.contains("ET")  &&
                                 !msgFromGroupChat.contains(username)) {
+
+                            System.out.println(msgFromGroupChat);
+
                             ETXP2 = translate.msgCreateETXP2(msgFromGroupChat, ETXP2);
                             ETYP2 = translate.msgCreateETYP2(msgFromGroupChat, ETYP2);
+                            randETP2 = translate.msgCreateRandET(msgFromGroupChat, randETP2);
 
                             if (ETXP2.size() == 40 && ETYP2.size() == 40) {
                                 for (int i = 0; i < ETXP2.size(); i++) {
                                     AETP2.add(new ElementPosition(ETXP2.get(i), ETYP2.get(i)));
                                 }
-                                randElement(AETP2, ID.ET, AETP2.size());
+                                randElement(AETP2, ID.ET, AETP2.size(), randETP2);
                             }
                         }
 
@@ -487,5 +530,4 @@ public class Game extends Canvas implements Runnable {
             e.printStackTrace();
         }
     }
-
 }

@@ -20,6 +20,14 @@ public class ET extends GameObject {
         random = getRandom(randomET);
     }
 
+    public ET(int x, int y, ID id, Handler handler, int random) {
+        super(x, y, id);
+        this.handler = handler;
+        destroy = 0;
+
+        this.random = random;
+    }
+
     @Override
     public void tick() {
 
@@ -41,7 +49,7 @@ public class ET extends GameObject {
                         destroy++;
                     }
                 } else if (tempObject.getId() == ID.Enemy) {
-                    if (Robot.hp < 100) {
+                    if (Enemy.hp < 100) {
                         random -= 5;
                         Enemy.hp += 5;
                     }
@@ -73,5 +81,9 @@ public class ET extends GameObject {
     public int getRandom(int[] array) {
         int rnd = new Random().nextInt(array.length);
         return array[rnd];
+    }
+
+    public int getRandom() {
+        return random;
     }
 }

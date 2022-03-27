@@ -90,8 +90,6 @@ public class TranslateMessage {
 
         if (element.equals(Game.ETXP1)) {
 
-            System.out.println(msgFromGroupChat);
-
             int indexET = msgFromGroupChat.indexOf(",ETX :");
             indexET += 6;
 
@@ -241,12 +239,8 @@ public class TranslateMessage {
 
         int indexColon = msgFromGroupChat.indexOf(":");
         indexColon += 2;
-
         int indexET = msgFromGroupChat.indexOf("areaPlayer2 BombY : ");
-
         String newMsgFromGroupChat = msgFromGroupChat.substring(indexColon, indexET);
-
-        System.out.println();
 
         String x[] = newMsgFromGroupChat.split(",");
 
@@ -291,8 +285,9 @@ public class TranslateMessage {
     }
 
     public ArrayList<Integer> msgCreateETYP2(String msgFromGroupChat, ArrayList<Integer> etyp2) {
-        int msgEnd = msgFromGroupChat.indexOf("ETY :");
-        String newMsgFromGroupChat = msgFromGroupChat.substring(msgEnd + 6);
+        int msgStart = msgFromGroupChat.indexOf("ETY :");
+        int msgEnd = msgFromGroupChat.indexOf("randET :");
+        String newMsgFromGroupChat = msgFromGroupChat.substring(msgStart + 6, msgEnd);
 
         String x[] = newMsgFromGroupChat.split(",");
 
@@ -301,6 +296,20 @@ public class TranslateMessage {
         }
 
         return etyp2;
+    }
+
+
+    public ArrayList<Integer> msgCreateRandET(String msgFromGroupChat, ArrayList<Integer> randETP2) {
+        int msgEnd = msgFromGroupChat.indexOf("randET :");
+        String newMsgFromGroupChat = msgFromGroupChat.substring(msgEnd + 9);
+
+        String x[] = newMsgFromGroupChat.split(",");
+
+        for (int i = 0; i < x.length; i++) {
+            randETP2.add(Integer.parseInt(x[i]));
+        }
+
+        return randETP2;
     }
 
     private String subMessage(String msgFromGroupChat, int indexCount) {

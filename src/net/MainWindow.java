@@ -12,7 +12,7 @@ import java.net.Socket;
 
 public class MainWindow {
 
-    private JFrame frame;
+    private final JFrame frame;
     private Game client;
 
 
@@ -75,16 +75,6 @@ public class MainWindow {
         button.setVisible(true);
 
         return button;
-
-    }
-
-    private void ButtonEx() {
-
-        // button
-        JButton buttonEx = new JButton("Exit game");
-        buttonEx.setBounds(300, 500, 200, 50);
-        frame.add(buttonEx);
-        buttonEx.setVisible(true);
 
     }
 
