@@ -34,6 +34,7 @@ public class Bomb extends GameObject{
                     Robot.hp -= 5;
 
                     sendMSG(Game.username + " decrease HP :" + Robot.hp);
+
                 }
             }
         }
