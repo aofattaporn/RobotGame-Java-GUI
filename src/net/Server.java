@@ -16,7 +16,7 @@ public class Server {
 
     public void startServer() {
 
-        System.out.println("Staring Server ...");
+        System.out.println("Starting Server ...");
         System.out.println("======================");
 
         try{
@@ -57,10 +57,7 @@ public class Server {
     public static void main(String[] args) throws IOException {
 
         ServerSocket serverSocket = new ServerSocket(9999);
-
-        // constructor server
         Server server = new Server(serverSocket);
-
         server.startServer();
 
     }
