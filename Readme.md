@@ -6,7 +6,7 @@
 
 
 ### explain package in project
--   `comtroller` เป็น package สำหรับรวม class ที่ใช้ในการควบคุมการทำงานส่วนมากเช่น ควบคุมเม้าท์ (MouseInput.class) คีย์บอร์ด (MouseInput.class) หรือมุมกล้องต่าง (Camera.class)
+-   `controller` เป็น package สำหรับรวม class ที่ใช้ในการควบคุมการทำงานส่วนมากเช่น ควบคุมเม้าท์ (MouseInput.class) คีย์บอร์ด (MouseInput.class) หรือมุมกล้องต่าง (Camera.class)
 
 -   `entity` เป็น package สำหรับการทำ model ในสำหรับใช้ใน array object ต่างๆ (MyPosition.class)
 
@@ -18,7 +18,7 @@
 
 
 
-### how to compile and run your code.
+### how to compile and run my code.
 1. เมื่อเปิด project มาให้เข้าไปที่ `folder src` ที่รวม package ที่ใช้ในการทำงาน  
 2. เลือก `package net` แล้วเลือก Run file `Server.class` เป็นไฟล์แรกเพื่อเปิด server
 ```java
@@ -59,30 +59,29 @@ public class MainWindow {
 * 3.3 เมื่อกรอก name ของ player ไปแล้ว ตัวเเกมจะมีการซุ่มเกิดของตัวละคร พร้อมสุ่มทุ่นระเบิดและ ET
   <img alt="plot" src="./src/res/forReadMe/img_client1.png" width="400"/>
 
-  1. หากต้องกการเชื่อมต่อ client2 เขข้าไปในเกม ให้ทำการ setting ตัว compiler ภายใน IDE ให้สามารถ `Allow multiple instance` ได้
+4.  หากต้องกการเชื่อมต่อ client2 เข้าไปในเกม ให้ทำการ `setting compiler` ภายใน IDE ให้สามารถ `Allow multiple instance`
       หากใช้ 
      - **IntelliJ** -> Run > `Edit Configurations...` then select the application. Click the Modify options drop-down, and turn on `Allow multiple instances.`
     
-      เมื่อ setting ให้เป็น `Allow multiple instances.` จะสามารถ Run ไฟล์เดียวกันโดยสามารถแยกหน้าต่างการทำงานไดได้ 
+      เมื่อ setting ให้เป็น `Allow multiple instances.` จะสามารถ Run ไฟล์เดียวกันโดยสามารถแยกหน้าต่างการทำงานได้ 
   
-  4.1.  ให้ทำการ Run `MainWindow.class` จะทำการสร้างตัวละครที่สองเช้าไปในเเกม โดยเมื่อเราเเดินไปที่ตำแหน่งของ player 1 ที่ทำการเข้ามาก่อนหน้าแล้ว จะเห็น Bomb และ ET ตำแหน่งเดียวกัน 
+    4.1.  ให้ทำการ Run `MainWindow.class` จะทำการสร้างตัวละครที่สองเข้าไปในเกม โดยเมื่อเราเเดินไปที่ตำแหน่งของ player 1 ที่ทำการเข้ามาก่อนหน้าแล้ว จะเห็น Bomb และ ET ตำแหน่งเดียวกัน 
 
     <img alt="plot" src="./src/res/forReadMe/img_multiclient.png" width="500"/>
 
 
-> สามาชิกกลุ่ม
->
-> 63090500410 ธนกฤษ แสงสุวรรณ
-> 
-> 63090500411 ธัญเทพ
-> 
-> 63090500416 วุฒิชัย ปิยรุ่งโรจน์
-> 
-> 63090500417 สุระวีร์ ใคร่ครวญ
->
-> 63090500417
-> 
-> 63090500442 อรรถพร พึงสุข
+### Member
+>> 63090500408 ฐาปณีย์ เรืองรองวรรษ
+
+>> 63090500410 ธนกฤษ แสงสุวรรณ
+
+>> 63090500411 ธัญเทพ ทัศนอนันชัย
+
+>> 63090500416 วุฒิชัย ปิยรุ่งโรจน์
+
+>> 63090500417 สุระวีร์ ใคร่ครวญ
+
+>> 63090500442 อรรถพร พึงสุข
 
 
 

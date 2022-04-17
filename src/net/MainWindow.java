@@ -15,8 +15,6 @@ public class MainWindow {
     private final JFrame frame;
     private Game client;
 
-
-
     public MainWindow(String name, int width, int height) {
 
         this.frame = new JFrame(name);
