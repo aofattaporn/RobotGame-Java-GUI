@@ -18,17 +18,17 @@ public class Bullet extends GameObject implements Runnable{
         if (id.equals(ID.BulletRobot)) {
 
             // set bullet
-            if (Robot.direct.equals("up")) velX = -40;
-            else if (Robot.direct.equals("down")) velX = 40;
-            else if (Robot.direct.equals("right")) velY = 40;
-            else if (Robot.direct.equals("left")) velY = -40;
+            if (Robot.direct.equals("up")) velX = -20;
+            else if (Robot.direct.equals("down")) velX = 20;
+            else if (Robot.direct.equals("right")) velY = 20;
+            else if (Robot.direct.equals("left")) velY = -20;
         }
 
         else if (id.equals(ID.BulletEnemy)){
-            if (Enemy.direct.equals("up")) velX = -40;
-            else if (Enemy.direct.equals("down")) velX = 40;
-            else if (Enemy.direct.equals("right")) velY = 40;
-            else if (Enemy.direct.equals("left")) velY = -40;
+            if (Enemy.direct.equals("up")) velX = -20;
+            else if (Enemy.direct.equals("down")) velX = 20;
+            else if (Enemy.direct.equals("right")) velY = 20;
+            else if (Enemy.direct.equals("left")) velY = -20;
         }
     }
 
