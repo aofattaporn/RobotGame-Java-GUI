@@ -50,7 +50,6 @@ public class Camera {
             else if (camY < offsetMinY) camY = offsetMinY;
 
         }
-
     }
 
     public float getCamX() {

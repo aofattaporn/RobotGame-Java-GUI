@@ -1,6 +1,7 @@
 package object;
 
 import controller.BufferImagesLoader;
+import controller.Injury;
 import mainGame.Handler;
 
 import java.awt.*;
@@ -42,12 +43,15 @@ public class Enemy extends GameObject{
         for (int i = 0; i < handler.object.size(); i++ ){
             GameObject tempObject = handler.object.get(i);
 
-            if (getBounds().intersects(tempObject.getBounds())) {
+              if (getBounds().intersects(tempObject.getBounds())) {
                 if (tempObject.getId() == ID.Bomb) {
-
                     Enemy.hp -= 5;
                     handler.removeObject(tempObject);
+                }
 
+                if (tempObject.getId() == ID.BulletRobot && Injury.check) {
+                    Enemy.hp -= 20;
+                    Injury.setCheck(false);
                 }
             }
         }

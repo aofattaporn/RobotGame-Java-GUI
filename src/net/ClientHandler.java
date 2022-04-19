@@ -161,11 +161,6 @@ public class ClientHandler implements Runnable {
 
         }
 
-        System.out.println("listBombX : " + this.listBombX);
-        System.out.println("listBombY : " + this.listBombY);
-        System.out.println("listETX : " + this.listETX);
-        System.out.println("listETY : " + this.listETY);
-
     }
 
     public void randElement2(ArrayList<ElementPosition> element, int size) {
@@ -176,8 +171,6 @@ public class ClientHandler implements Runnable {
         if (element.equals(AET)) {
 
             for (int i = 0; i < size; i++) {
-
-                System.out.println(" เเข้า ในนี้ เถอเะไอสัส ");
 
                 randETX = getRandomPlayer(2, 102);
                 randETY = getRandomPlayer(2, 82);

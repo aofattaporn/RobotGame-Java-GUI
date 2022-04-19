@@ -1,5 +1,6 @@
 package object;
 
+import controller.Injury;
 import mainGame.Handler;
 
 import java.awt.*;
@@ -10,25 +11,35 @@ public class Bullet extends GameObject implements Runnable{
     private Enemy enemy;
     private Handler handler;
     private String username;
+    private Injury injury;
 
     public Bullet(int x, int y, ID id, Handler handler) {
-        super(x, y, id);
+
+
+         super(x , y, id);
+
+        if (Robot.direct.equals("up")) x = -10;
+        else if (Robot.direct.equals("down")) x = 10;
+        else if (Robot.direct.equals("right")) y = 10;
+        else if (Robot.direct.equals("left")) y = -10;
+
         this.handler = handler;
 
         if (id.equals(ID.BulletRobot)) {
 
             // set bullet
-            if (Robot.direct.equals("up")) velX = -20;
-            else if (Robot.direct.equals("down")) velX = 20;
-            else if (Robot.direct.equals("right")) velY = 20;
-            else if (Robot.direct.equals("left")) velY = -20;
+            if (Robot.direct.equals("up")) velX = -10;
+            else if (Robot.direct.equals("down")) velX = 10;
+            else if (Robot.direct.equals("right")) velY = 10;
+            else if (Robot.direct.equals("left")) velY = -10;
+
         }
 
         else if (id.equals(ID.BulletEnemy)){
-            if (Enemy.direct.equals("up")) velX = -20;
-            else if (Enemy.direct.equals("down")) velX = 20;
-            else if (Enemy.direct.equals("right")) velY = 20;
-            else if (Enemy.direct.equals("left")) velY = -20;
+            if (Enemy.direct.equals("up")) velX = -10;
+            else if (Enemy.direct.equals("down")) velX = 10;
+            else if (Enemy.direct.equals("right")) velY = 10;
+            else if (Enemy.direct.equals("left")) velY = -10;
         }
     }
 
@@ -44,21 +55,14 @@ public class Bullet extends GameObject implements Runnable{
             GameObject tempObject = handler.object.get(i);
 
             if (getBounds().intersects(tempObject.getBounds())) {
-                if (tempObject.getId() == ID.Robot) {
-                    Robot.hp -= 20;
-                }
 
-                else if (tempObject.getId() == ID.Enemy) {
-                    Enemy.hp -= 20;
-                }
 
-                else if (tempObject.getId() == ID.Bomb){
+                 if (tempObject.getId() == ID.Bomb){
                     handler.removeObject(this);
                     handler.removeObject(tempObject);
                 }
             }
         }
-
     }
 
     @Override

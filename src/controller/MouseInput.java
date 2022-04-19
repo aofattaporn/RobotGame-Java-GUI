@@ -24,9 +24,7 @@ public  class MouseInput implements MouseListener {
             if (my >=  300 && my <= 350){
                 // Press exit botton
                 System.out.println("exit");
-
                 game.stop();
-
             }
         }
 

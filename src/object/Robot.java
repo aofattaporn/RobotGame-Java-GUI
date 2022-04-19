@@ -1,6 +1,7 @@
 package object;
 
 import controller.BufferImagesLoader;
+import controller.Injury;
 import mainGame.Game;
 import mainGame.Handler;
 
@@ -113,10 +114,19 @@ public class Robot extends GameObject {
                             }
                         }
                     }
+
+                    if (tempObject.getId() == ID.BulletEnemy && Injury.check) {
+                        injured();
+                    }
                 }
             }
         }
 
+    }
+
+    synchronized private void injured(){
+        Robot.hp -= 20;
+        Injury.setCheck(false);
     }
 
     @Override

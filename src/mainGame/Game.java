@@ -33,6 +33,7 @@ public class Game extends Canvas implements Runnable {
     private Window window;
     private Thread mainThread;
     private Thread timerThread;
+    private Thread injuryThread;
     private Handler handler;
     private Camera camera;
     private BufferedImage tile = null;
@@ -111,9 +112,11 @@ public class Game extends Canvas implements Runnable {
         isRunning = true;
         mainThread = new Thread(this);
         timerThread = new Thread(new timer(this));
+        injuryThread = new Thread(new Injury());
 
         // start thread
         timerThread.start();
+        injuryThread.start();
         mainThread.start();
 
     }
@@ -210,29 +213,33 @@ public class Game extends Canvas implements Runnable {
         // create HP
         createHP(g);
 
-        if (Robot.hp <= 0) {
-            g.setColor(new Color(192, 192, 192, 90));
-            g.fillRect(0, 0, WIDTH, HEIGHT);
+        if (Robot.hp <= 0) createWindowEnd(g, g2d, "You Lose");
 
-            g.setColor(Color.orange);
-            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 50));
-            g.drawString("You Lose", 270, 200);
-
-            g2d.fillRect(270, 300, 270, 50);
-            g.setColor(Color.white);
-            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
-            g.drawString("click to exit", 280, 335);
-
-            this.addMouseListener(new MouseInput(this));
-
-            Robot.handler = null;
-
-        }
+        if (Enemy.hp <= 0)  createWindowEnd(g, g2d, "You Win");
 
 
         /////////////////////////////////
         g.dispose();
         bs.show();
+
+    }
+
+    private void createWindowEnd(Graphics g, Graphics2D g2d, String title){
+        g.setColor(new Color(192, 192, 192, 90));
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+
+        g.setColor(Color.orange);
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 50));
+        g.drawString(title, 270, 200);
+
+        g2d.fillRect(270, 300, 270, 50);
+        g.setColor(Color.white);
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+        g.drawString("click to exit", 280, 335);
+
+        this.addMouseListener(new MouseInput(this));
+
+        Robot.handler = null;
 
     }
 
@@ -490,8 +497,6 @@ public class Game extends Canvas implements Runnable {
 
                         if (msgFromGroupChat.contains("areaPlayer2") && msgFromGroupChat.contains("ET")  &&
                                 !msgFromGroupChat.contains(username)) {
-
-                            System.out.println(msgFromGroupChat);
 
                             ETXP2 = translate.msgCreateETXP2(msgFromGroupChat, ETXP2);
                             ETYP2 = translate.msgCreateETYP2(msgFromGroupChat, ETYP2);

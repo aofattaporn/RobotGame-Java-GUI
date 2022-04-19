@@ -17,13 +17,13 @@ public class KeyInput extends KeyAdapter {
         this.handler = handler;
     }
 
-    public void keyPressed(KeyEvent e){
+    public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
 
-        for (int i = 0; i < handler.object.size(); i++){
+        for (int i = 0; i < handler.object.size(); i++) {
             GameObject tempObject = handler.object.get(i);
 
-            if (tempObject.getId() == ID.Robot){
+            if (tempObject.getId() == ID.Robot) {
                 if (key == KeyEvent.VK_W) handler.setUp(true);
                 if (key == KeyEvent.VK_S) handler.setDown(true);
                 if (key == KeyEvent.VK_A) handler.setLeft(true);
@@ -35,14 +35,14 @@ public class KeyInput extends KeyAdapter {
         }
     }
 
-    public void keyReleased(KeyEvent e){
+    public void keyReleased(KeyEvent e) {
 
         int key = e.getKeyCode();
 
-        for (int i = 0; i < handler.object.size(); i++){
+        for (int i = 0; i < handler.object.size(); i++) {
             GameObject tempObject = handler.object.get(i);
 
-            if (tempObject.getId() == ID.Robot){
+            if (tempObject.getId() == ID.Robot) {
                 if (key == KeyEvent.VK_W) handler.setUp(false);
                 if (key == KeyEvent.VK_S) handler.setDown(false);
                 if (key == KeyEvent.VK_A) handler.setLeft(false);
